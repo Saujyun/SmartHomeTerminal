@@ -9,27 +9,27 @@ import android.util.Log;
 public class LogUtil {
     private static int level = 10;
 
-    public static void loge(String tag, String s) {
+    public static void loge(String tag, String string) {
         if (level > 0) {
-            Log.e(tag, s);
+            Log.e(tag, string);
         }
     }
 
-    public static void logd(String tag, String s) {
+    public static void logd(String tag, String string) {
         if (level > 0) {
-            Log.d(tag, s);
+            Log.d(tag, string);
         }
     }
 
-    public static void logw(String tag, String s) {
+    public static void logw(String tag, String string) {
         if (level > 0) {
-            Log.w(tag, s);
+            Log.w(tag, string);
         }
     }
 
-    public static void logi(String tag, String s) {
+    public static void logi(String tag, String string) {
         if (level > 0) {
-            Log.i(tag, s);
+            Log.i(tag, string);
         }
     }
 
