@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:id="@+id/rootView">
+
+    <Button
+        android:id="@+id/button_connect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/connect"
+        tools:layout_editor_absoluteX="66dp"
+        tools:layout_editor_absoluteY="231dp" />
+
+    <Button
+        android:id="@+id/button_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/search"
+        tools:layout_editor_absoluteX="557dp"
+        tools:layout_editor_absoluteY="0dp"
+        android:layout_toRightOf="@id/button_connect"/>
+
+    <Button
+        android:id="@+id/button_disconnect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/disconnect"
+        tools:layout_editor_absoluteX="248dp"
+        tools:layout_editor_absoluteY="230dp"
+        android:layout_toRightOf="@id/button_search"/>
+
+    <Button
+        android:id="@+id/button_generate_QR"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/generate_QR"
+        tools:layout_editor_absoluteX="154dp"
+        tools:layout_editor_absoluteY="138dp"
+        android:layout_toRightOf="@id/button_disconnect"/>
+
+</RelativeLayout>
