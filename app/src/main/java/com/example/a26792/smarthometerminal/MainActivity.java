@@ -9,14 +9,20 @@ import android.os.Bundle;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.a26792.smarthometerminal.Fragment.QrCodeFragment;
 import com.example.a26792.smarthometerminal.utils.LogUtil;
+import com.uuzuche.lib_zxing.activity.CodeUtils;
+import com.uuzuche.lib_zxing.activity.ZXingLibrary;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -58,7 +64,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(paramBundle);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
+        //初始化二维码生成器
+        ZXingLibrary.initDisplayOpinion(this);
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         // Create a BroadcastReceiver for ACTION_FOUND
         mReceiver = new BroadcastReceiver() {
@@ -129,6 +136,11 @@ public class MainActivity extends AppCompatActivity {
 //                break;
             case R.id.button_generate_QR:
                 //TO-DO：生成二维码
+                FragmentTransaction fragmentTransaction=getSupportFragmentManager().beginTransaction();
+                QrCodeFragment fragment=new QrCodeFragment();
+                fragmentTransaction.replace(R.id.qrcode_fragment,fragment);
+                fragmentTransaction.addToBackStack(null);//fragment页面加到返回栈
+                fragmentTransaction.commit();
                 LogUtil.loge(TAG, "QR");
                 break;
             default:

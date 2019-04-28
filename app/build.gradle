@@ -28,4 +28,6 @@ dependencies {
     //引用BtterKnife
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    //引入二维码生成第三方库
+    implementation 'cn.yipianfengye.android:zxing-library:2.2'
 }
