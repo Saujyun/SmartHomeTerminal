@@ -18,16 +18,18 @@
         android:layout_height="wrap_content"
         android:text="@string/connect"
         tools:layout_editor_absoluteX="66dp"
-        tools:layout_editor_absoluteY="231dp" />
+        tools:layout_editor_absoluteY="231dp"
+        android:background="@drawable/buttonclick"/>
 
     <Button
         android:id="@+id/button_search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/button_connect"
-        android:text="@string/search"
+        android:text="@string/service"
         tools:layout_editor_absoluteX="557dp"
-        tools:layout_editor_absoluteY="0dp" />
+        tools:layout_editor_absoluteY="0dp"
+        android:background="@drawable/buttonclick"/>
 
     <Button
         android:id="@+id/button_disconnect"
@@ -36,7 +38,8 @@
         android:layout_toRightOf="@id/button_search"
         android:text="@string/disconnect"
         tools:layout_editor_absoluteX="248dp"
-        tools:layout_editor_absoluteY="230dp" />
+        tools:layout_editor_absoluteY="230dp"
+        android:background="@drawable/buttonclick"/>
 
     <Button
         android:id="@+id/button_generate_QR"
@@ -45,7 +48,8 @@
         android:layout_toRightOf="@id/button_disconnect"
         android:text="@string/generate_QR"
         tools:layout_editor_absoluteX="154dp"
-        tools:layout_editor_absoluteY="138dp" />
+        tools:layout_editor_absoluteY="138dp"
+        android:background="@drawable/buttonclick"/>
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="20dp"
