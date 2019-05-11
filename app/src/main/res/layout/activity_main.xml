@@ -1,80 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/qrcode_fragment"
-    android:layout_height="match_parent"
-    android:layout_width="match_parent">
-<RelativeLayout
-    android:id="@+id/rootView"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/button_connect"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/connect"
-        tools:layout_editor_absoluteX="66dp"
-        tools:layout_editor_absoluteY="231dp"
-        android:background="@drawable/buttonclick"/>
-
-    <Button
-        android:id="@+id/button_search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/button_connect"
-        android:text="@string/service"
-        tools:layout_editor_absoluteX="557dp"
-        tools:layout_editor_absoluteY="0dp"
-        android:background="@drawable/buttonclick"/>
-
-    <Button
-        android:id="@+id/button_disconnect"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/button_search"
-        android:text="@string/disconnect"
-        tools:layout_editor_absoluteX="248dp"
-        tools:layout_editor_absoluteY="230dp"
-        android:background="@drawable/buttonclick"/>
-
-    <Button
-        android:id="@+id/button_generate_QR"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/button_disconnect"
-        android:text="@string/generate_QR"
-        tools:layout_editor_absoluteX="154dp"
-        tools:layout_editor_absoluteY="138dp"
-        android:background="@drawable/buttonclick"/>
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_below="@id/button_connect"
-        android:background="@drawable/ic_error_outline_black_24dp" />
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="21dp"
-        android:layout_marginTop="3dp"
-        android:layout_toRightOf="@id/imageView"
-        android:layout_below="@id/button_connect"
-        android:text="点击下方item连接蓝牙" />
-
-
-
-
+    <LinearLayout
+        android:id="@+id/rootView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".MainActivity">
 
         <LinearLayout
-            android:layout_below="@id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/button_connect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/connect"
+                tools:layout_editor_absoluteX="66dp"
+                tools:layout_editor_absoluteY="231dp" />
+            <Button
+                android:id="@+id/button_disconnect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/button_search"
+                android:text="@string/disconnect"
+                tools:layout_editor_absoluteX="248dp"
+                tools:layout_editor_absoluteY="230dp" />
+            <Button
+                android:id="@+id/button_search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/button_connect"
+                android:text="@string/service"
+                tools:layout_editor_absoluteX="557dp"
+                tools:layout_editor_absoluteY="0dp" />
+
+
+
+            <Button
+                android:id="@+id/button_generate_QR"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/button_disconnect"
+                android:text="@string/generate_QR"
+                tools:layout_editor_absoluteX="154dp"
+                tools:layout_editor_absoluteY="138dp" />
+        </LinearLayout>
+
+        <ViewStub
+            android:id="@+id/mViewStub"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout="@layout/root_viewstub_layout" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_below="@id/button_connect"
+                android:background="@drawable/ic_error_outline_black_24dp" />
+
+            <TextView
+                android:id="@+id/info_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/button_connect"
+                android:layout_alignParentStart="true"
+                android:layout_toRightOf="@id/imageView"
+                android:text="点击下方item连接管理员用户的蓝牙完成注册" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_below="@id/imageView"
             android:orientation="vertical">
 
             <include
@@ -88,6 +98,6 @@
                 android:layout_height="match_parent" />
         </LinearLayout>
 
-</RelativeLayout>
+    </LinearLayout>
 
 </FrameLayout>

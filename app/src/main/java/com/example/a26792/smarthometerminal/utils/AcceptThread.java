@@ -17,11 +17,12 @@ import static android.content.ContentValues.TAG;
  * 服务端的线程
  */
 public class AcceptThread extends Thread {
-    private static final String TAG="AcceptThreadtest";
+    private static final String TAG = "AcceptThreadtest";
     private static final String NAME = "accpet";
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     private final BluetoothServerSocket mmServerSocket;
     private final BluetoothAdapter mBluetoothAdapter;
+    private ConnectedThread connectedThread;
 
     public AcceptThread(BluetoothAdapter bluetoothAdapter) {
 
@@ -38,7 +39,7 @@ public class AcceptThread extends Thread {
     }
 
     public void run() {
-        Log.e(TAG, "run: " );
+        Log.e(TAG, "run: ");
         BluetoothSocket socket = null;
         // Keep listening until exception occurs or a socket is returned
         while (true) {
@@ -51,7 +52,7 @@ public class AcceptThread extends Thread {
             // If a connection was accepted
             if (socket != null) {
                 // Do work to manage the connection (in a separate thread)
-                Log.e(TAG, "run:已连接设备，开启接收线程 " );
+                Log.e(TAG, "run:已连接设备，开启接收线程 ");
                 manageConnectedSocket(socket);
                 try {
                     mmServerSocket.close();
@@ -64,13 +65,31 @@ public class AcceptThread extends Thread {
     }
 
     private void manageConnectedSocket(BluetoothSocket socket) {
-   ConnectedThread connectedThread=new ConnectedThread(socket);
-   connectedThread.start();
-           // InputStream inputStream=socket.getInputStream();
-            Log.e(TAG, "manageConnectedSocket: ");
+        synchronized (this){
+            ConnectedThread connectedThread = new ConnectedThread(socket);
+            connectedThread.start();
+            this.notifyAll();
+        }
+
+        // InputStream inputStream=socket.getInputStream();
+        Log.e(TAG, "manageConnectedSocket: ");
 
     }
+    public ConnectedThread getConnectedThread() {
+        if (connectedThread == null) {
+            synchronized (this) {
+                try {
+                    this.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return connectedThread;
+            }
+        } else {
+            return connectedThread;
+        }
 
+    }
     /**
      * Will cancel the listening socket, and cause the thread to finish
      */
