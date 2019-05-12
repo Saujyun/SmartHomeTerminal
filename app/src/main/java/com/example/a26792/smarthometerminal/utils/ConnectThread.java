@@ -80,58 +80,19 @@ public class ConnectThread extends Thread {
 
     private void manageConnectedSocket(BluetoothSocket mmSocket) {
         Log.e(TAG, "manageConnectedSocket: 连接成功，准备发送数据");
-        synchronized (this) {
-            connectedThread = new ConnectedThread2(mmSocket);
-            connectedThread.start();
-            if (!MainActivity.isRegistered) {
-                //未曾注册，先发送注册信号
-                send("register");
-                EventBus.getDefault().post("sr");
-            }
-            this.notifyAll();
+
+        connectedThread = new ConnectedThread2(mmSocket);
+        connectedThread.start();
+        if (!MainActivity.isRegistered) {
+            //未曾注册，先发送注册信号
+            Log.e(TAG, "manageConnectedSocket: 未曾注册");
+            EventBus.getDefault().post(new EventMessage("register", null));
+            EventBus.getDefault().post(new EventMessage("sr", null));
         }
 
 
     }
 
-
-
-    public ConnectedThread2 getConnectedThread() {
-        if (connectedThread == null) {
-            synchronized (this) {
-                try {
-                    this.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return connectedThread;
-            }
-        } else {
-            return connectedThread;
-        }
-
-    }
-
-    public boolean send(String s) {
-        Log.e(TAG, "send: ");
-        switch (s) {
-            case "register":
-                connectedThread.write(strToByteArray(Protocols.getRegister(Protocols.userAndroidId)));
-                break;
-            case "openDoor":
-                connectedThread.write(strToByteArray(Protocols.getOpenDoor(Protocols.userAndroidId)));
-                break;
-            case "closeDoor":
-                connectedThread.write(strToByteArray(Protocols.getCloseDoor(Protocols.userAndroidId)));
-                break;
-            case "record":
-                connectedThread.write(strToByteArray(Protocols.getRecord(Protocols.userAndroidId)));
-                break;
-            default:
-                break;
-        }
-        return true;
-    }
 
     /**
      * Will cancel an in-progress connection, and close the socket
@@ -139,7 +100,7 @@ public class ConnectThread extends Thread {
     public void cancel() {
         try {
             mmSocket.close();
-
+            Log.e(TAG, "cancel: " );
         } catch (IOException e) {
         }
     }

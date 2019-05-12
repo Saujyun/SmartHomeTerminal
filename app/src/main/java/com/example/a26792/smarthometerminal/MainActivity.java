@@ -16,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -24,6 +25,7 @@ import android.view.ViewStub;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +40,7 @@ import com.example.a26792.smarthometerminal.utils.EventMessage;
 import com.example.a26792.smarthometerminal.utils.LogUtil;
 import com.example.a26792.smarthometerminal.utils.MyApplication;
 import com.example.a26792.smarthometerminal.utils.SharedPreferencesUtil;
+import com.example.a26792.smarthometerminal.utils.Transform;
 import com.uuzuche.lib_zxing.activity.CodeUtils;
 import com.uuzuche.lib_zxing.activity.ZXingLibrary;
 
@@ -71,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private List<String> mArrayList = new ArrayList<>();
     private List<BluetoothDevice> bluetoothDeviceList = new ArrayList<>();
     private Set<BluetoothDevice> pairedDevices;
+    private AcceptThread acceptThread;
     Set<String> temp = new HashSet<>();
     Set<String> temp1 = new HashSet<>();
     @BindView(R.id.button_connect)
@@ -93,6 +97,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button shanchu_btn;
     private Button others_btn;
     private String ANDROID_ID = "";
+    //checkbox控件
+    @BindView(R.id.root_cb)
+    public CheckBox root_cb;
+    @BindView(R.id.noroot_cb)
+    public CheckBox notroot_cb;
+    @BindView(R.id.connect__cb)
+    public CheckBox connect_cb;
+    @BindView(R.id.disconnect_cb)
+    public CheckBox disconnect_cb;
+    @BindView(R.id.service_cb)
+    public CheckBox service_cb;
+    @BindView(R.id.client_cb)
+    public CheckBox client_cb;
+    @BindView(R.id.register_cb)
+    public CheckBox register_cb;
+    @BindView(R.id.noregister_cb)
+    public CheckBox noregister_cb;
 
 
     protected void onCreate(Bundle paramBundle) {
@@ -100,18 +121,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         if (getIntent().getStringExtra("user").equals("root")) {
+            //root用户
             isRootUser = true;
             isRegistered = true;
             info_tv.setText("点击下方item连接门禁系统蓝牙");
+            root_cb.setChecked(true);
+            register_cb.setChecked(true);
             initRootView();
+        } else {
+            //普通用户
+            notroot_cb.setChecked(true);
+            if (SharedPreferencesUtil.sharedPreferences.contains("isRegistered") && SharedPreferencesUtil.sharedPreferences.getBoolean("isRegistered", false) == true) {
+                //普通用户已注册
+                info_tv.setText("点击下方item连接门禁系统蓝牙");
+                isRegistered = true;
+                register_cb.setChecked(true);
+            } else {
+                //普通用户未曾注册
+                noregister_cb.setChecked(true);
+            }
         }
-
-
-        if (SharedPreferencesUtil.sharedPreferences.contains("isRegistered") && SharedPreferencesUtil.sharedPreferences.getBoolean("isRegistered", false) == true) {
-            info_tv.setText("点击下方item连接门禁系统蓝牙");
-            isRegistered = true;
-        }
-
+        disconnect_cb.setChecked(true);
         //初始化二维码生成器
         ZXingLibrary.initDisplayOpinion(this);
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -120,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.e(TAG, "onCreate: " + ANDROID_ID);
         EventBus.getDefault().register(this);
     }
+
 
     private void initRootView() {
         ViewStub viewStub = findViewById(R.id.mViewStub);
@@ -173,8 +204,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         Log.e(TAG, "onItemClick: " + position);
                         connectThread = new ConnectThread(device, mBluetoothAdapter);
                         connectThread.start();
-                        connectedThread2 = connectThread.getConnectedThread();
-
+                        client_cb.setChecked(true);
                     }
 
                 }
@@ -187,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(MainActivity.this, "connecting" + position, Toast.LENGTH_SHORT).show();
                 connectThread = new ConnectThread(bluetoothDeviceList.get(position), mBluetoothAdapter);
                 connectThread.start();
-                connectedThread2 = connectThread.getConnectedThread();
+                client_cb.setChecked(true);
             }
         });
     }
@@ -201,7 +231,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    //点击事件监听
+    /**
+     * 点击事件监听
+     *
+     * @param view
+     */
     @OnClick(value = {R.id.button_connect, R.id.button_disconnect, R.id.button_search, R.id.button_generate_QR})
     public void onClick(View view) {
         switch (view.getId()) {
@@ -221,24 +255,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 }
                 searchBluetoolDevices();
+
                 break;
             case R.id.button_disconnect:
                 //TO-DO:关闭蓝牙
                 mBluetoothAdapter.disable();
                 LogUtil.loge(TAG, "discoonect");
+                if (connectedThread != null) {
+                    connectThread.cancel();
+                    connectedThread.cancel();//断开普通用户socket连接
+                    disconnect_cb.setChecked(false);
+                }
+                if (connectedThread2 != null) {
+                    acceptThread.cancel();
+                    connectedThread2.cancel();//断开管理者用户socket连接
+                    disconnect_cb.setChecked(false);
+                }
                 break;
             case R.id.button_search:
                 //开关门
-                if (connectedThread2 == null) {
-                    Toast.makeText(this, "请先连接蓝牙设备", Toast.LENGTH_SHORT).show();
-                } else {
-                    if (btn_search.getText().equals("开门")) {
-                        send("openDoor");
-                        btn_search.setText("关门");
-                    } else if (btn_search.getText().equals("关门")) {
-                        send("closeDoor");
-                        btn_search.setText("开门");
-                    }
+                if (btn_search.getText().equals("开门")) {
+                    EventBus.getDefault().post(new EventMessage("openDoor", null));
+
+                    btn_search.setText("关门");
+                } else if (btn_search.getText().equals("关门")) {
+                    EventBus.getDefault().post(new EventMessage("closeDoor", null));
+                    btn_search.setText("开门");
                 }
                 break;
             case R.id.button_generate_QR:
@@ -251,28 +293,81 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 LogUtil.loge(TAG, "QR");
                 break;
             case R.id.jianting:
-                synchronized (this) {
-                    AcceptThread acceptThread = new AcceptThread(mBluetoothAdapter);
-                    acceptThread.start();
-                    connectedThread = acceptThread.getConnectedThread();
-                    Log.e(TAG, "openService: ");
-                    while (connectedThread != null)
-                        this.notifyAll();
-                    break;
-                }
-
+                acceptThread = new AcceptThread(mBluetoothAdapter);
+                acceptThread.start();
+                service_cb.setChecked(true);
+                Log.e(TAG, "openService: ");
+                break;
             case R.id.tianjia:
+                showSingleAlertDialog("add");
                 Log.e(TAG, "onClick:tianjia ");
                 break;
             case R.id.shanchu:
+                showSingleAlertDialog("delete");
                 Log.e(TAG, "onClick:shanchu ");
                 break;
             case R.id.others:
+                showSingleAlertDialog("show");
                 Log.e(TAG, "onClick:others ");
                 break;
+            case R.id.record:
+                EventBus.getDefault().post(new EventMessage("record", null));
             default:
                 break;
         }
+    }
+
+    /**
+     * 该函数用于显示sharepreference里保存的list，点击来实现注册
+     */
+    public void showSingleAlertDialog(final String order) {
+
+        if (SharedPreferencesUtil.sharedPreferences.contains("othersUser1")) {
+            int count = SharedPreferencesUtil.sharedPreferences.getInt("userCount", 0);
+            final String[] items = new String[count];
+            for (int i = 0; i < count; i++) {
+                items[i] = SharedPreferencesUtil.sharedPreferences.getString("othersUser" + (i + 1), "null");
+            }
+            android.app.AlertDialog.Builder alertBuilder = new android.app.AlertDialog.Builder(this);
+            alertBuilder.setTitle("这是单选框,请选择你要添加的用户");
+
+            alertBuilder.setSingleChoiceItems(items, 0, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Toast.makeText(MainActivity.this, "您选中了：" + items[i], Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            alertBuilder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    if (order.equals("delete")) {
+                        EventBus.getDefault().post(new EventMessage("shanchu", items[i]));
+                    } else if (order.equals("add")) {
+                        EventBus.getDefault().post(new EventMessage("tianjia", items[i]));
+                    }
+                    dialogInterface.dismiss();
+                }
+            });
+
+            alertBuilder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
+                }
+            });
+            android.app.AlertDialog alertDialog = alertBuilder.create();
+            alertDialog.show();
+        } else {
+            Toast.makeText(this, "没有需要添加/删除的用户", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    /**
+     * 在此函数展示所有用户
+     */
+    private void showOthersUsers() {
     }
 
     private void searchBluetoolDevices() {
@@ -315,53 +410,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    public boolean send(String s) {
-        Log.e(TAG, "send: ");
-        switch (s) {
-            case "register":
-                connectedThread2.write(strToByteArray(Protocols.getRegister(Protocols.userAndroidId)));
-                break;
-            case "openDoor":
-                connectedThread2.write(strToByteArray(Protocols.getOpenDoor(Protocols.userAndroidId)));
-                break;
-            case "closeDoor":
-                connectedThread2.write(strToByteArray(Protocols.getCloseDoor(Protocols.userAndroidId)));
-                break;
-            case "record":
-                connectedThread2.write(strToByteArray(Protocols.getRecord(Protocols.userAndroidId)));
-                break;
-            default:
-                break;
-        }
-        return true;
-    }
-
     /**
-     * String转byte[]
+     * 该函数辅助Thread执行UI交互操作
      *
-     * @param str
-     * @return
+     * @param eventMessage
      */
-    public static byte[] strToByteArray(String str) {
-        if (str == null) {
-            return null;
-        }
-        byte[] byteArray = str.getBytes();
-        return byteArray;
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void toast(EventMessage eventMessage) {
         Log.e(TAG, "toast: ");
         if (eventMessage.getMessgae().equals("sr")) {
-            Toast.makeText(MyApplication.getContext(), "注册请求已发送", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "注册请求已发送", Toast.LENGTH_SHORT).show();
         }
         if (eventMessage.getMessgae().equals("c")) {
-            Toast.makeText(MyApplication.getContext(), "连接成功，准备发送数据", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "连接成功，准备发送数据", Toast.LENGTH_SHORT).show();
         }
         if (eventMessage.getMessgae().equals("receiveRegister")) {
             addAlertDialog(eventMessage.getOrder());
         }
+        if (eventMessage.getMessgae().equals("unagress") && !isRootUser) {
+            Toast.makeText(this, "管理员不同意你的注册申请!", Toast.LENGTH_SHORT).show();
+        }
+        if (eventMessage.getMessgae().equals("agress") && !isRootUser) {
+            Toast.makeText(this, "管理员同意你的注册申请!", Toast.LENGTH_SHORT).show();
+            info_tv.setText("点击下方item连接门禁系统蓝牙");
+            register_cb.setChecked(true);
+            noregister_cb.setChecked(false);
+        }
+        if (eventMessage.getMessgae().equals("test")) {
+            Toast.makeText(this, "test" + eventMessage.getOrder(), Toast.LENGTH_SHORT).show();
+        }
+        if (eventMessage.getMessgae().equals("connect")) {
+            Toast.makeText(this, "connect" + eventMessage.getOrder(), Toast.LENGTH_SHORT).show();
+            connect_cb.setChecked(true);
+            disconnect_cb.setChecked(false);
+        }
+
     }
 
     /**
@@ -371,33 +454,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void addAlertDialog(final String o) {
         android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(this);
-        builder.setMessage("收到来自" + "注册请求,是否同意");
+        builder.setMessage("收到来自" + o + "注册请求,是否同意");
         builder.setCancelable(false);
         builder.setPositiveButton("同意", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
                 SharedPreferences.Editor editor = SharedPreferencesUtil.sharedPreferences.edit();
-                editor.putString("others", o);
-                editor.commit();
-                EventBus.getDefault().post(new EventMessage("agress","1"));
-//                if (connectedThread == null) {
-//                    synchronized (this) {
-//                        try {
-//                            this.wait();
-//                            connectedThread.write(new byte[]{1});
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                } else {
-//                    connectedThread.write(new byte[]{1});
-//                }
+                int userCount;
+                if (SharedPreferencesUtil.sharedPreferences.contains("userCount")) {
+                    userCount = SharedPreferencesUtil.sharedPreferences.getInt("userCount", 0);
+                    userCount++;
+                    editor.putInt("userCount", userCount);
+                    editor.putString("othersUser" + userCount, o);
+                    editor.commit();
+                } else {
+                    editor.putInt("userCount", 1);
+                    editor.putString("othersUser1", o);
+                    editor.commit();
+                }
 
+                EventBus.getDefault().post(new EventMessage("agress", "1"));
                 dialog.dismiss();
                 dialog.cancel();
-
-
             }
         });
         builder.setNegativeButton("不同意", new DialogInterface.OnClickListener() {
@@ -405,7 +483,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Log.e(TAG, "不同意该用户的注册 ");
-                EventBus.getDefault().post(new EventMessage("unagress","1"));
+                EventBus.getDefault().post(new EventMessage("unagress", "0"));
                 dialog.dismiss();
                 dialog.cancel();
             }
@@ -414,6 +492,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         dialog.show();
     }
 
+    /**
+     * 在这里做好socket关闭，资源回收操作
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -421,6 +502,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mBluetoothAdapter = null;
         temp = null;
         temp1 = null;
+        if (connectThread != null) {
+            connectedThread.cancel();
+        }
+        if (acceptThread != null) {
+            acceptThread.cancel();
+        }
+        if (connectedThread2 != null) {
+            connectedThread2.cancel();
+        }
+        if (connectedThread != null) {
+            connectedThread.cancel();
+        }
         EventBus.getDefault().unregister(this);
     }
 

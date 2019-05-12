@@ -65,37 +65,20 @@ public class AcceptThread extends Thread {
     }
 
     private void manageConnectedSocket(BluetoothSocket socket) {
-        synchronized (this){
             ConnectedThread connectedThread = new ConnectedThread(socket);
             connectedThread.start();
-            this.notifyAll();
-        }
-
         // InputStream inputStream=socket.getInputStream();
         Log.e(TAG, "manageConnectedSocket: ");
 
     }
-    public ConnectedThread getConnectedThread() {
-        if (connectedThread == null) {
-            synchronized (this) {
-                try {
-                    this.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return connectedThread;
-            }
-        } else {
-            return connectedThread;
-        }
 
-    }
     /**
      * Will cancel the listening socket, and cause the thread to finish
      */
     public void cancel() {
         try {
             mmServerSocket.close();
+            Log.e(TAG, "cancel: " );
         } catch (IOException e) {
         }
     }

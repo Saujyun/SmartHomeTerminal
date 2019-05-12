@@ -8,13 +8,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#bebdbd"
+
         android:text="已配对" />
 
     <ListView
         android:id="@+id/already_connect_bt_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+
         android:layout_below="@id/already_connect_bt_tx">
 
     </ListView>
+
 </RelativeLayout>

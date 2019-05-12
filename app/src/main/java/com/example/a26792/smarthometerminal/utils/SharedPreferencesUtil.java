@@ -26,5 +26,9 @@ public class SharedPreferencesUtil {
             return null;
         return res;
     }
+    public static void clear(){
+        editor.clear();
+        editor.commit();
+    }
 
 }

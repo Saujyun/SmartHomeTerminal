@@ -66,29 +66,16 @@ public class ConnectedThread extends Thread {
                 // Read from the InputStream
                 //其实这个bytes返回的是输入流的长度，buffer[]才是返回的数据
                 bytes = mmInStream.read(buffer);
-                final String order = byteArrayToStr(buffer, bytes);
+                final String order = Transform.byteArrayToStr(buffer, bytes);
                 // Send the obtained bytes to the UI activity
                 Log.e(TAG, "run: " + order);
-//
-//                mHandler=new Handler(Looper.getMainLooper(), new Handler.Callback() {
-//                    @Override
-//                    public boolean handleMessage(Message msg) {
-//                        if (msg.what==200){
-//                            addAlertDialog(order);
-//                        }
-//                        Toast.makeText(MyApplication.getContext(),"接收到数据:" +msg.what,Toast.LENGTH_SHORT).show();
-//                        if (msg.what==300){
-//                            Toast.makeText(MyApplication.getContext(), "请连接门禁系统，为普通用户完成注册", Toast.LENGTH_SHORT).show();
-//                        }
-//                        return false;
-//                    }
-//                });
-
                 if (Protocols.userAndroidId.equals(Protocols.getRootAndroidId()) && order.charAt(0) == 'Z') {
                     Log.e(TAG, "接收到注册请求：");
                     EventBus.getDefault().post(new EventMessage("receiveRegister", order));
 
                     //mHandler.sendEmptyMessage(200);
+                }else {
+                    EventBus.getDefault().post(new EventMessage("test", order));
                 }
             } catch (IOException e) {
                 break;
@@ -98,10 +85,32 @@ public class ConnectedThread extends Thread {
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void agress(EventMessage message) {
+        //回复普通手机用户的注册请求
         if (message.getMessgae().equals("agress")) {
-            write(new byte[]{1});
+            write("1".getBytes());
         } else if (message.getMessgae().equals("unagress")) {
-            write(new byte[]{0});
+            write("0".getBytes());
+        }
+        switch (message.getMessgae()) {
+            case "openDoor":
+                write(Transform.strToByteArray(Protocols.getOpenDoor(Protocols.userAndroidId)));
+                break;
+            case "closeDoor":
+                write(Transform.strToByteArray(Protocols.getCloseDoor(Protocols.userAndroidId)));
+                break;
+            case "tianjia":
+                Log.e(TAG, "tianjia: " + Protocols.getRegister(message.getOrder()));
+                write(Transform.strToByteArray(Protocols.getRegister(message.getOrder())));
+                break;
+            case "shanchu":
+                Log.e(TAG, "shanchu: " + Protocols.getRegister(message.getOrder()));
+                write(Transform.strToByteArray(Protocols.getDeleteUser(message.getOrder())));
+                break;
+            case "record":
+                Log.e(TAG, "record: " + Protocols.getRegister(message.getOrder()));
+                write(Transform.strToByteArray(Protocols.getRecord(null)));
+            default:
+                break;
         }
     }
 
@@ -117,26 +126,10 @@ public class ConnectedThread extends Thread {
     public void cancel() {
         try {
             mmSocket.close();
+            Log.e(TAG, "cancel: " );
             EventBus.getDefault().unregister(this);
         } catch (IOException e) {
         }
     }
 
-    /**
-     * byte[]转String
-     * @param byteArray
-     * @return
-     */
-    public static String byteArrayToStr(byte[] byteArray,int length) {
-        if (byteArray == null) {
-            return null;
-        }
-        byte[]byteArray2=new byte[length];
-        for (int i=0;i<length;i++){
-            byteArray2[i]=byteArray[i];
-        }
-        //  byteArray2=byteArray.clone();不可以这样子不然会出现乱码
-        String str = new String(byteArray2);
-        return str;
-    }
 }

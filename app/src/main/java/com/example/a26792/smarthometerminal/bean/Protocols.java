@@ -1,6 +1,7 @@
 package com.example.a26792.smarthometerminal.bean;
 
 import android.provider.Settings;
+import android.support.annotation.Nullable;
 
 import com.example.a26792.smarthometerminal.utils.MyApplication;
 
@@ -14,13 +15,13 @@ public class Protocols {
     private static String deleteUser = "";
     private static String rootAndroidId = "6cd7a0115ddabd6d";
     public static String userAndroidId = "";
-    private static String openDoor = "1";
-    private static String closeDoor = "0";
+    private static String openDoor = "O";
+    private static String closeDoor = "C";
     private static String record="record";
 
 
     public static String getRegister(String userAndroidId) {
-        return "Z" + rootAndroidId + userAndroidId;
+        return "R" + rootAndroidId + userAndroidId;
     }
 
     public static String getDeleteUser(String userAndroidId) {
@@ -40,11 +41,11 @@ public class Protocols {
         return "D" + userAndroidId + closeDoor;
     }
 
-    public static String getRecord(String userAndroidId) {
-        return userAndroidId+record;
+    public static String getRecord(@Nullable  String userAndroidId) {
+        return "D"+rootAndroidId+"R";
     }
 
     public static String getRegisterFromOthers() {
-        return "R"+userAndroidId;
+        return "Z"+userAndroidId;
     }
 }
