@@ -42,7 +42,14 @@
                 android:text="@string/service"
                 tools:layout_editor_absoluteX="557dp"
                 tools:layout_editor_absoluteY="0dp" />
-
+            <Button
+                android:id="@+id/requestagain_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/button_disconnect"
+                android:text="@string/generate_QR"
+                tools:layout_editor_absoluteX="154dp"
+                tools:layout_editor_absoluteY="138dp" />
 
             <Button
                 android:id="@+id/button_generate_QR"
@@ -91,24 +98,26 @@
             <include
                 layout="@layout/already_connect_bt_list"
                 android:layout_width="0dp"
-                android:layout_height="200dp"
+                android:layout_height="300dp"
                 android:layout_weight="1" />
 
             <View
                 android:layout_width="3dp"
-                android:layout_height="200dp"
+                android:layout_height="300dp"
                 android:background="#e10808" />
 
             <include
                 layout="@layout/bluetoothdevices_list"
                 android:layout_width="0dp"
-                android:layout_height="200dp"
+                android:layout_height="300dp"
                 android:layout_weight="1" />
         </LinearLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="3dp"
-            android:background="#e10808"/>
+            android:background="#e10808" />
+
         <include
             layout="@layout/status_layout"
             android:layout_width="match_parent"

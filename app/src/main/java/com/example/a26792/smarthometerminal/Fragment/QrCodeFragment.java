@@ -20,7 +20,13 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.a26792.smarthometerminal.R;
+import com.example.a26792.smarthometerminal.utils.EventMessage;
+import com.example.a26792.smarthometerminal.utils.SharedPreferencesUtil;
 import com.uuzuche.lib_zxing.activity.CodeUtils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -44,7 +50,6 @@ public class QrCodeFragment extends Fragment implements GestureDetector.OnGestur
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.qrcode_layout, container, false);
         qrcode_iv = view.findViewById(R.id.qrcode_iv);
-        generateQRCode();
         final GestureDetector gestureDetector = new GestureDetector(this);
         view.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -52,11 +57,15 @@ public class QrCodeFragment extends Fragment implements GestureDetector.OnGestur
                 return gestureDetector.onTouchEvent(event);
             }
         });
+        EventBus.getDefault().register(this);
         return view;
     }
 
     private void generateQRCode() {
         String textContent = "test for QRCode";
+        if (SharedPreferencesUtil.sharedPreferences.contains("password")) {
+            textContent = SharedPreferencesUtil.sharedPreferences.getString("password", "");
+        }
         if (TextUtils.isEmpty(textContent)) {
             Toast.makeText(getContext(), "您的输入为空!", Toast.LENGTH_SHORT).show();
             return;
@@ -66,6 +75,14 @@ public class QrCodeFragment extends Fragment implements GestureDetector.OnGestur
             Log.e(TAG, "generateQRCode: ");
         } else {
             qrcode_iv.setImageBitmap(mBitmap);
+        }
+
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void updataQRcode(EventMessage eventMessage) {
+        if (eventMessage.getMessgae().equals("updataQRcode")) {
+            generateQRCode();
         }
 
     }
@@ -126,4 +143,9 @@ public class QrCodeFragment extends Fragment implements GestureDetector.OnGestur
         }
     }
 
+    @Override
+    public void onDestroy() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroy();
+    }
 }

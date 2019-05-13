@@ -18,6 +18,7 @@ public class Protocols {
     private static String openDoor = "O";
     private static String closeDoor = "C";
     private static String record="record";
+    private static String password="";
 
 
     public static String getRegister(String userAndroidId) {
@@ -47,5 +48,9 @@ public class Protocols {
 
     public static String getRegisterFromOthers() {
         return "Z"+userAndroidId;
+    }
+
+    public static String getPassword() {
+        return "M"+userAndroidId;
     }
 }

@@ -84,6 +84,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @BindView(R.id.button_search)
     Button btn_search;
     @BindView(R.id.button_generate_QR)
+    Button btn_register;
+    @BindView(R.id.requestagain_btn)
     Button btn_QR;
     @BindView(R.id.already_connect_bt_list)
     ListView mAlreadyBluetoothDevicesList;
@@ -236,7 +238,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      *
      * @param view
      */
-    @OnClick(value = {R.id.button_connect, R.id.button_disconnect, R.id.button_search, R.id.button_generate_QR})
+    @OnClick(value = {R.id.button_connect, R.id.button_disconnect, R.id.button_search, R.id.button_generate_QR, R.id.requestagain_btn})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_connect:
@@ -261,12 +263,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //TO-DO:关闭蓝牙
                 mBluetoothAdapter.disable();
                 LogUtil.loge(TAG, "discoonect");
-                if (connectedThread != null) {
+                if (connectedThread != null && connectedThread != null) {
                     connectThread.cancel();
                     connectedThread.cancel();//断开普通用户socket连接
                     disconnect_cb.setChecked(false);
                 }
-                if (connectedThread2 != null) {
+                if (connectedThread2 != null && acceptThread != null) {
                     acceptThread.cancel();
                     connectedThread2.cancel();//断开管理者用户socket连接
                     disconnect_cb.setChecked(false);
@@ -274,28 +276,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.button_search:
                 //开关门
-                if (btn_search.getText().equals("开门")) {
-                    EventBus.getDefault().post(new EventMessage("openDoor", null));
+                if (connect_cb.isChecked()) {
+                    if (btn_search.getText().equals("开门")) {
+                        EventBus.getDefault().post(new EventMessage("openDoor", null));
 
-                    btn_search.setText("关门");
-                } else if (btn_search.getText().equals("关门")) {
-                    EventBus.getDefault().post(new EventMessage("closeDoor", null));
-                    btn_search.setText("开门");
+                        btn_search.setText("关门");
+                    } else if (btn_search.getText().equals("关门")) {
+                        EventBus.getDefault().post(new EventMessage("closeDoor", null));
+                        btn_search.setText("开门");
+                    }
+                } else {
+                    Toast.makeText(this, "请先连接蓝牙", Toast.LENGTH_SHORT).show();
                 }
+
                 break;
             case R.id.button_generate_QR:
                 //TO-DO：生成二维码
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                QrCodeFragment fragment = new QrCodeFragment();
-                fragmentTransaction.replace(R.id.qrcode_fragment, fragment);
-                fragmentTransaction.addToBackStack(null);//fragment页面加到返回栈
-                fragmentTransaction.commit();
-                LogUtil.loge(TAG, "QR");
+                if (connect_cb.isChecked()) {
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    QrCodeFragment fragment = new QrCodeFragment();
+                    fragmentTransaction.replace(R.id.qrcode_fragment, fragment);
+                    fragmentTransaction.addToBackStack(null);//fragment页面加到返回栈
+                    fragmentTransaction.commit();
+                    EventBus.getDefault().post(new EventMessage("request", null));
+                    LogUtil.loge(TAG, "QR");
+                } else {
+                    Toast.makeText(this, "请先连接蓝牙", Toast.LENGTH_SHORT).show();
+                }
+
+                break;
+            case R.id.requestagain_btn:
+                EventBus.getDefault().post(new EventMessage("register", null));
                 break;
             case R.id.jianting:
                 acceptThread = new AcceptThread(mBluetoothAdapter);
                 acceptThread.start();
                 service_cb.setChecked(true);
+                client_cb.setChecked(false);
                 Log.e(TAG, "openService: ");
                 break;
             case R.id.tianjia:
@@ -425,6 +442,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(this, "连接成功，准备发送数据", Toast.LENGTH_SHORT).show();
         }
         if (eventMessage.getMessgae().equals("receiveRegister")) {
+            connect_cb.setChecked(true);
+            disconnect_cb.setChecked(false);
             addAlertDialog(eventMessage.getOrder());
         }
         if (eventMessage.getMessgae().equals("unagress") && !isRootUser) {
@@ -502,7 +521,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mBluetoothAdapter = null;
         temp = null;
         temp1 = null;
-        if (connectThread != null) {
+        if (connectedThread != null) {
             connectedThread.cancel();
         }
         if (acceptThread != null) {

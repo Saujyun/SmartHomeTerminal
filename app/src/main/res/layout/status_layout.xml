@@ -31,14 +31,20 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="管理员" />
+                android:text="管理员"
+                android:clickable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"/>
 
             <CheckBox
                 android:id="@+id/noroot_cb"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="普通用户" />
+                android:text="普通用户"
+                android:clickable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"/>
         </LinearLayout>
 
 
@@ -57,14 +63,20 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="已注册" />
+                android:text="已注册"
+                android:clickable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"/>
 
             <CheckBox
                 android:id="@+id/noregister_cb"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="未注册" />
+                android:text="未注册"
+                android:clickable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"/>
         </TableRow>
 
         <TableRow
@@ -82,14 +94,20 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="已连接" />
+                android:text="已连接"
+                android:clickable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"/>
 
             <CheckBox
                 android:id="@+id/disconnect_cb"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="未连接" />
+                android:text="未连接"
+                android:clickable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"/>
 
         </TableRow>
 
@@ -101,21 +119,28 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="蓝牙角色：" />
+                android:text="蓝牙角色："
+                />
 
             <CheckBox
                 android:id="@+id/service_cb"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="服务器" />
+                android:text="服务器"
+                android:clickable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"/>
 
             <CheckBox
                 android:id="@+id/client_cb"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="客户端" />
+                android:text="客户端"
+                android:clickable="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"/>
         </TableRow>
 
         <!--<TableRow-->

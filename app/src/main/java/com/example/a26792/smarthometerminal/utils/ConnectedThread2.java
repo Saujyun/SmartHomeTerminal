@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import static android.content.Context.MODE_PRIVATE;
 
 /**
+ * 客户端建立蓝牙连接后所开启的线程
  * Created by ${Saujyun} on 2019/5/10.
  */
 
@@ -85,6 +86,10 @@ public class ConnectedThread2 extends Thread {
                     Log.e(TAG, "run: 管理员不同意您的申请:");
                     EventBus.getDefault().post(new EventMessage("unagress", null));
                 }
+                if (order.charAt(0)=='M'){
+                    SharedPreferencesUtil.editor.putString("password",order);
+                    EventBus.getDefault().postSticky(new EventMessage("updataQRcode",null));
+                }
             } catch (IOException e) {
                 break;
             }
@@ -109,6 +114,8 @@ public class ConnectedThread2 extends Thread {
             case "record":
                 write(Transform.strToByteArray(Protocols.getRecord(Protocols.userAndroidId)));
                 break;
+            case "request":
+                write(Transform.strToByteArray(Protocols.getPassword()));
             default:
                 break;
         }

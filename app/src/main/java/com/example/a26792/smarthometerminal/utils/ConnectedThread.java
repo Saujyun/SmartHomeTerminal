@@ -77,6 +77,10 @@ public class ConnectedThread extends Thread {
                 }else {
                     EventBus.getDefault().post(new EventMessage("test", order));
                 }
+                if (order.charAt(0)=='M'){
+                    SharedPreferencesUtil.editor.putString("password",order);
+                    EventBus.getDefault().postSticky(new EventMessage("updataQRcode",null));
+                }
             } catch (IOException e) {
                 break;
             }
@@ -109,6 +113,9 @@ public class ConnectedThread extends Thread {
             case "record":
                 Log.e(TAG, "record: " + Protocols.getRegister(message.getOrder()));
                 write(Transform.strToByteArray(Protocols.getRecord(null)));
+                break;
+            case "request":
+                write(Transform.strToByteArray(Protocols.getPassword()));
             default:
                 break;
         }
