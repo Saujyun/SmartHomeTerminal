@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.content.Intent;
+import android.os.IBinder;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -153,7 +154,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         EventBus.getDefault().register(this);
     }
 
-
+    /**
+     * 初始化root用户的部分特殊功能view
+     */
     private void initRootView() {
         ViewStub viewStub = findViewById(R.id.mViewStub);
         viewStub.inflate();
@@ -207,6 +210,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         connectThread = new ConnectThread(device, mBluetoothAdapter);
                         connectThread.start();
                         client_cb.setChecked(true);
+                        service_cb.setChecked(false);
                     }
 
                 }
@@ -220,6 +224,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 connectThread = new ConnectThread(bluetoothDeviceList.get(position), mBluetoothAdapter);
                 connectThread.start();
                 client_cb.setChecked(true);
+                service_cb.setChecked(false);
             }
         });
     }
@@ -234,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
-     * 点击事件监听
+     * 按钮点击事件监听
      *
      * @param view
      */

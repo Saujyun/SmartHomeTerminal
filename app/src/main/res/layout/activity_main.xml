@@ -22,43 +22,36 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/connect"
-                tools:layout_editor_absoluteX="66dp"
-                tools:layout_editor_absoluteY="231dp" />
+                android:layout_weight="1"/>
 
             <Button
                 android:id="@+id/button_disconnect"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/button_search"
                 android:text="@string/disconnect"
-                tools:layout_editor_absoluteX="248dp"
-                tools:layout_editor_absoluteY="230dp" />
+                android:layout_weight="1"/>
 
             <Button
                 android:id="@+id/button_search"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/button_connect"
                 android:text="@string/service"
-                tools:layout_editor_absoluteX="557dp"
-                tools:layout_editor_absoluteY="0dp" />
+                android:layout_weight="1"/>
+
             <Button
                 android:id="@+id/requestagain_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/button_disconnect"
-                android:text="@string/generate_QR"
+                android:layout_weight="1"
+                android:text="@string/request"
                 tools:layout_editor_absoluteX="154dp"
                 tools:layout_editor_absoluteY="138dp" />
-
             <Button
                 android:id="@+id/button_generate_QR"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/button_disconnect"
                 android:text="@string/generate_QR"
-                tools:layout_editor_absoluteX="154dp"
-                tools:layout_editor_absoluteY="138dp" />
+                android:layout_weight="1"/>
         </LinearLayout>
 
         <ViewStub

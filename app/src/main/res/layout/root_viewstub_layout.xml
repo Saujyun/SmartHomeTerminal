@@ -1,40 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <Button
         android:id="@+id/jianting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="打开监听"
-        android:onClick="openListen"/>
+        android:onClick="openListen"
+        android:text="打开监听" />
 
     <Button
         android:id="@+id/tianjia"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="添加用户"
-        android:onClick="addUser"/>
+        android:onClick="addUser"
+        android:text="添加用户" />
 
     <Button
         android:id="@+id/shanchu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="删除用户"
-        android:onClick="deleteUser"/>
+        android:onClick="deleteUser"
+        android:text="删除用户" />
 
     <Button
         android:id="@+id/others"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="其他用户"
-        android:onClick="showOthers"/>
+        android:onClick="showOthers"
+        android:text="其他用户" />
 
     <Button
         android:id="@+id/record"
