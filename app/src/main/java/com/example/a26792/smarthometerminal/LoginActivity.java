@@ -5,12 +5,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.a26792.smarthometerminal.Fragment.PassWordFragment;
+import com.example.a26792.smarthometerminal.Fragment.QrCodeFragment;
 import com.example.a26792.smarthometerminal.bean.Protocols;
 import com.example.a26792.smarthometerminal.utils.SharedPreferencesUtil;
 
@@ -19,6 +22,7 @@ import com.example.a26792.smarthometerminal.utils.SharedPreferencesUtil;
  */
 public class LoginActivity extends AppCompatActivity {
     private static String TAG = "LoginActivitytest";
+    private boolean check;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,19 +32,62 @@ public class LoginActivity extends AppCompatActivity {
         Protocols.userAndroidId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
         Log.e(TAG, "onCreate: " + Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID));
         //先删除上一次保存的数据
+        // TODO: 2019/5/21 完成之后，要删除该部分代码，同时要把data/share_pre文件删除 
         SharedPreferencesUtil lastSharedPreferencesUtil = new SharedPreferencesUtil(getApplicationContext());
         SharedPreferencesUtil.clear();
         SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(getApplicationContext());
     }
 
     public void rootLogin(View view) {
-        if (Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID).equals("6cd7a0115ddabd6d")) {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("user", "root");
-            startActivity(intent);
-        } else {
-            Toast.makeText(this, "对不起你不是管理员用户，请注册为普通用户", Toast.LENGTH_SHORT).show();
-        }
+        // TODO: 2019/5/21 自动登录功能
+        final PasswordDialog passwordDialog = new PasswordDialog(this);
+        passwordDialog.setYesOnclickListener(new PasswordDialog.onYesOnclickListener() {
+            @Override
+            public void onYesClick(boolean right) {
+                check = right;
+                if (right) {
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.putExtra("user", "root");
+                    startActivity(intent);
+                    Toast.makeText(LoginActivity.this, "请登录之后，马上更改门禁系统的管理员AndroidID", Toast.LENGTH_SHORT).show();
+// TODO: 2019/5/21  更改门禁系统的管理员AndroidID操作
+                } else {
+                    Toast.makeText(LoginActivity.this, "对不起你不是管理员用户，请注册为普通用户", Toast.LENGTH_SHORT).show();
+                }
+                passwordDialog.dismiss();
+            }
+
+
+        });
+        passwordDialog.show();
+//        if (Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID).equals("6cd7a0115ddabd6d")) {
+//            Intent intent = new Intent(this, MainActivity.class);
+//            intent.putExtra("user", "root");
+//            startActivity(intent);
+//        } else {
+//            Toast.makeText(this, "对不起你不是管理员用户，请注册为普通用户", Toast.LENGTH_SHORT).show();
+//        }
+
+    }
+
+    /**
+     * 用户登录检测函数
+     *
+     * @return
+     */
+    private void checkPW() {
+
+        final PasswordDialog passwordDialog = new PasswordDialog(this);
+        passwordDialog.setYesOnclickListener(new PasswordDialog.onYesOnclickListener() {
+            @Override
+            public void onYesClick(boolean rigth) {
+                check = rigth;
+                passwordDialog.dismiss();
+            }
+
+
+        });
+        passwordDialog.show();
 
     }
 

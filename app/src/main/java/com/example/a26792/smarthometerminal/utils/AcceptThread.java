@@ -67,6 +67,7 @@ public class AcceptThread extends Thread {
     private void manageConnectedSocket(BluetoothSocket socket) {
             ConnectedThread connectedThread = new ConnectedThread(socket);
             connectedThread.start();
+
         // InputStream inputStream=socket.getInputStream();
         Log.e(TAG, "manageConnectedSocket: ");
 

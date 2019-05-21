@@ -13,12 +13,14 @@ public class Protocols {
     private static String register = "";
     private static String registerFromOthers = "";
     private static String deleteUser = "";
-    private static String rootAndroidId = "6cd7a0115ddabd6d";
+    private static String rootAndroidId = "6cd7a0115ddabd6d";//默认管理员AndroidID
     public static String userAndroidId = "";
     private static String openDoor = "O";
     private static String closeDoor = "C";
-    private static String record="record";
-    private static String password="";
+    private static String record = "record";
+    private static String password = "";
+
+
 
 
     public static String getRegister(String userAndroidId) {
@@ -42,15 +44,24 @@ public class Protocols {
         return "D" + userAndroidId + closeDoor;
     }
 
-    public static String getRecord(@Nullable  String userAndroidId) {
-        return "D"+rootAndroidId+"R";
+    public static String getRecord(@Nullable String userAndroidId) {
+        return "D" + rootAndroidId + "R";
     }
 
     public static String getRegisterFromOthers() {
-        return "Z"+userAndroidId;
+        return "Z" + userAndroidId;
     }
 
     public static String getPassword() {
-        return "M"+userAndroidId;
+        return "M" + userAndroidId;
+    }
+
+    public static void setRootAndroidId(String rootAndroidId) {
+        Protocols.rootAndroidId = rootAndroidId;
+
+    }
+
+    public static String changeRoot() {
+        return "C"+rootAndroidId+"T"+userAndroidId;
     }
 }

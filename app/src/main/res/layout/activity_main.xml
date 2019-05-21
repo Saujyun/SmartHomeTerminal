@@ -21,37 +21,36 @@
                 android:id="@+id/button_connect"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/connect"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                android:text="@string/connect" />
 
             <Button
                 android:id="@+id/button_disconnect"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/disconnect"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                android:text="@string/disconnect" />
 
             <Button
                 android:id="@+id/button_search"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/service"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                android:text="@string/service" />
 
             <Button
                 android:id="@+id/requestagain_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/request"
-                tools:layout_editor_absoluteX="154dp"
-                tools:layout_editor_absoluteY="138dp" />
+                android:text="@string/request" />
+
             <Button
                 android:id="@+id/button_generate_QR"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/generate_QR"
-                android:layout_weight="1"/>
+                android:layout_weight="1"
+                android:text="@string/generate_QR" />
         </LinearLayout>
 
         <ViewStub
@@ -97,7 +96,7 @@
             <View
                 android:layout_width="3dp"
                 android:layout_height="300dp"
-                android:background="#e10808" />
+                android:background="#e53a40" />
 
             <include
                 layout="@layout/bluetoothdevices_list"
@@ -109,7 +108,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="3dp"
-            android:background="#e10808" />
+            android:background="#e53a40" />
 
         <include
             layout="@layout/status_layout"

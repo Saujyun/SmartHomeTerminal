@@ -28,7 +28,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 /**
  * Created by ${Saujyun} on 2019/4/30.
- * 连接成功后，发送数据
+ * 连接成功后，服务端发送数据
  */
 public class ConnectedThread extends Thread {
     private static final String TAG = "ConnectedThreadtest";
@@ -72,8 +72,6 @@ public class ConnectedThread extends Thread {
                 if (Protocols.userAndroidId.equals(Protocols.getRootAndroidId()) && order.charAt(0) == 'Z') {
                     Log.e(TAG, "接收到注册请求：");
                     EventBus.getDefault().post(new EventMessage("receiveRegister", order));
-
-                    //mHandler.sendEmptyMessage(200);
                 }else {
                     EventBus.getDefault().post(new EventMessage("test", order));
                 }

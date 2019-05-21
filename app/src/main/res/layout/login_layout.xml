@@ -1,28 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/password_fl"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/rootuser"
-            android:layout_width="150dp"
-            android:layout_height="wrap_content"
-            android:onClick="rootLogin"
-            android:text="管理员用户" />
 
-        <Button
-            android:id="@+id/othersuser"
-            android:layout_width="150dp"
+        <RelativeLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/rootuser"
-            android:layout_alignEnd="@+id/rootuser"
-            android:onClick="othersLogin"
-            android:text="普通用户" />
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true">
+
+            <Button
+                android:id="@+id/rootuser"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:onClick="rootLogin"
+                android:text="管理员用户" />
+
+            <Button
+                android:id="@+id/othersuser"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rootuser"
+                android:layout_alignEnd="@+id/rootuser"
+                android:onClick="othersLogin"
+                android:text="普通用户" />
+        </RelativeLayout>
+
     </RelativeLayout>
-</RelativeLayout>
+</FrameLayout>

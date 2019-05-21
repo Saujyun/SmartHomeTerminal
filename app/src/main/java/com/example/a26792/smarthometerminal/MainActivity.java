@@ -120,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     protected void onCreate(Bundle paramBundle) {
+
         super.onCreate(paramBundle);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -351,7 +352,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 items[i] = SharedPreferencesUtil.sharedPreferences.getString("othersUser" + (i + 1), "null");
             }
             android.app.AlertDialog.Builder alertBuilder = new android.app.AlertDialog.Builder(this);
-            alertBuilder.setTitle("这是单选框,请选择你要添加的用户");
+            if (order.equals("add")) {
+                alertBuilder.setTitle("这是单选框,请选择你要添加的用户");
+            } else if (order.equals("delete")) {
+                alertBuilder.setTitle("这是单选框,请选择你要删除的用户");
+            } else {
+                alertBuilder.setTitle("这是所有普通用户");
+            }
+
 
             alertBuilder.setSingleChoiceItems(items, 0, new DialogInterface.OnClickListener() {
                 @Override
@@ -364,9 +372,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     if (order.equals("delete")) {
-                        EventBus.getDefault().post(new EventMessage("shanchu", items[i]));
+                        Log.e(TAG, "onClick: deletedailog" + i);
+                        EventBus.getDefault().post(new EventMessage("shanchu", items[i + 1]));
                     } else if (order.equals("add")) {
-                        EventBus.getDefault().post(new EventMessage("tianjia", items[i]));
+                        Log.e(TAG, "onClick: tianjiaDailog" + i);
+                        EventBus.getDefault().post(new EventMessage("tianjia", items[i + 1]));
                     }
                     dialogInterface.dismiss();
                 }
@@ -520,8 +530,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 在这里做好socket关闭，资源回收操作
      */
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onStop() {
+        super.onStop();
         unregisterReceiver(mReceiver);
         mBluetoothAdapter = null;
         temp = null;
@@ -540,6 +550,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         EventBus.getDefault().unregister(this);
     }
-
-
 }

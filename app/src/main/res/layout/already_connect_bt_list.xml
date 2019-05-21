@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#f2e877">
 
     <TextView
         android:id="@+id/already_connect_bt_tx"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#bebdbd"
-
-        android:text="已配对" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="#30a9de"
+        android:text="已配对"
+        android:textColor="#fffbfb"
+        android:textStyle="bold" />
 
     <ListView
         android:id="@+id/already_connect_bt_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         android:layout_below="@id/already_connect_bt_tx">
 
     </ListView>
