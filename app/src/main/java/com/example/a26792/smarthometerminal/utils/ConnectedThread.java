@@ -69,7 +69,8 @@ public class ConnectedThread extends Thread {
                 final String order = Transform.byteArrayToStr(buffer, bytes);
                 // Send the obtained bytes to the UI activity
                 Log.e(TAG, "run: " + order);
-                if (Protocols.userAndroidId.equals(Protocols.getRootAndroidId()) && order.charAt(0) == 'Z') {
+                //Protocols.userAndroidId.equals(Protocols.getRootAndroidId()) 不需要加此判断
+                if ( order.charAt(0) == 'Z') {
                     Log.e(TAG, "接收到注册请求：");
                     EventBus.getDefault().post(new EventMessage("receiveRegister", order));
                 }else {
