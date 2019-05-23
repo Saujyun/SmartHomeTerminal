@@ -21,6 +21,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.AdapterView;
@@ -117,6 +119,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public CheckBox register_cb;
     @BindView(R.id.noregister_cb)
     public CheckBox noregister_cb;
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.Introduction:
+                Intent intent1 = new Intent(MainActivity.this, IntroductionActivity.class);
+                startActivity(intent1);
+                break;
+            case R.id.About:
+                Intent intent2 = new Intent(MainActivity.this, AboutActivity.class);
+                startActivity(intent2);
+                break;
+            default:
+        }
+                return true;
+        }
+//        return super.onOptionsItemSelected(item);
 
 
     protected void onCreate(Bundle paramBundle) {
@@ -400,6 +420,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 在此函数展示所有用户
      */
     private void showOthersUsers() {
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+//        return super.onCreateOptionsMenu(menu);
     }
 
     private void searchBluetoolDevices() {
