@@ -69,21 +69,34 @@ public class ConnectedThread extends Thread {
                 final String order = Transform.byteArrayToStr(buffer, bytes);
                 // Send the obtained bytes to the UI activity
                 Log.e(TAG, "run: " + order);
+                forwardOrder(order);
                 //Protocols.userAndroidId.equals(Protocols.getRootAndroidId()) 不需要加此判断
-                if ( order.charAt(0) == 'Z') {
-                    Log.e(TAG, "接收到注册请求：");
-                    EventBus.getDefault().post(new EventMessage("receiveRegister", order));
-                }else {
-                    EventBus.getDefault().post(new EventMessage("test", order));
-                }
-                if (order.charAt(0)=='M'){
-                    SharedPreferencesUtil.editor.putString("password",order);
-                    EventBus.getDefault().postSticky(new EventMessage("updataQRcode",null));
-                }
+
             } catch (IOException e) {
                 break;
             }
         }
+    }
+
+    private void forwardOrder(String order) {
+        if (order.charAt(0) == 'T') {
+            Log.e(TAG, "接收到注册请求：");
+            EventBus.getDefault().post(new EventMessage("receiveRegister", order));
+        }
+        if (order.charAt(0) == 'M') {
+            SharedPreferencesUtil.editor.putString("password", order);
+            EventBus.getDefault().postSticky(new EventMessage("updataQRcode", null));
+        }
+        if (order.charAt(0) == 'F') {
+            EventBus.getDefault().post(new EventMessage("fire", null));
+        }
+        if (order.charAt(0) == 'A') {
+            EventBus.getDefault().post(new EventMessage("air", null));
+        }
+        if (order.charAt(0) == 'M') {
+            write(Transform.strToByteArray("MtestQR"));
+        }
+        EventBus.getDefault().post(new EventMessage("test", order));
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -115,6 +128,13 @@ public class ConnectedThread extends Thread {
                 break;
             case "request":
                 write(Transform.strToByteArray(Protocols.getPassword()));
+                break;
+            case "closesocket":
+                cancel();
+                break;
+            case "change":
+                write(Transform.strToByteArray(Protocols.changeRoot()));
+                break;
             default:
                 break;
         }
@@ -130,12 +150,15 @@ public class ConnectedThread extends Thread {
 
     /* Call this from the main activity to shutdown the connection */
     public void cancel() {
-        try {
-            mmSocket.close();
-            Log.e(TAG, "cancel: " );
-            EventBus.getDefault().unregister(this);
-        } catch (IOException e) {
+        if (mmSocket.isConnected()) {
+            try {
+                mmSocket.close();
+                Log.e(TAG, "cancel: ");
+                EventBus.getDefault().unregister(this);
+            } catch (IOException e) {
+            }
         }
+
     }
 
 }

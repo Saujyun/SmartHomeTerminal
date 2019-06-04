@@ -3,6 +3,6 @@
     <string name="generate_QR">生成</string>
     <string name="service">开门</string>
     <string name="connect">搜索</string>
-    <string name="disconnect">断开</string>
+    <string name="openlight">开灯</string>
     <string name="request">注册</string>
 </resources>

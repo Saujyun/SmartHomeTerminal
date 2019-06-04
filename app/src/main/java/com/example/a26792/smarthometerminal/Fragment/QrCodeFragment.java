@@ -37,11 +37,11 @@ import butterknife.ButterKnife;
 /**
  * Created by ${Saujyun} on 2019/4/28.
  */
-public class QrCodeFragment extends Fragment implements GestureDetector.OnGestureListener {
+public class QrCodeFragment extends Fragment {
 
     ImageView qrcode_iv;
     private Bitmap mBitmap;
-    private String TAG = "QrCodeFragment";
+    private String TAG = "QrCodeFragmenttest";
     private String path;
 
     @SuppressWarnings("deprecation")
@@ -50,18 +50,12 @@ public class QrCodeFragment extends Fragment implements GestureDetector.OnGestur
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.qrcode_layout, container, false);
         qrcode_iv = view.findViewById(R.id.qrcode_iv);
-        final GestureDetector gestureDetector = new GestureDetector(this);
-        view.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return gestureDetector.onTouchEvent(event);
-            }
-        });
         EventBus.getDefault().register(this);
         return view;
     }
 
     private void generateQRCode() {
+        Log.e(TAG, "generateQRCode: ");
         String textContent = "test for QRCode";
         if (SharedPreferencesUtil.sharedPreferences.contains("password")) {
             textContent = SharedPreferencesUtil.sharedPreferences.getString("password", "");
@@ -74,6 +68,7 @@ public class QrCodeFragment extends Fragment implements GestureDetector.OnGestur
         if (mBitmap == null || qrcode_iv == null) {
             Log.e(TAG, "generateQRCode: ");
         } else {
+            qrcode_iv.setBackground(null);
             qrcode_iv.setImageBitmap(mBitmap);
         }
 
@@ -82,42 +77,10 @@ public class QrCodeFragment extends Fragment implements GestureDetector.OnGestur
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void updataQRcode(EventMessage eventMessage) {
         if (eventMessage.getMessgae().equals("updataQRcode")) {
+            Log.e(TAG, "updataQRcode: ");
             generateQRCode();
         }
 
-    }
-
-    @Override
-    public boolean onDown(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public void onShowPress(MotionEvent e) {
-
-    }
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        return false;
-    }
-
-    @Override
-    public void onLongPress(MotionEvent e) {
-        Log.e(TAG, "onLongPress: ");
-        //点击也会触发
-        path = Environment.getExternalStorageDirectory().getPath() + "/qrcode";
-        savaImage(mBitmap, path);
-    }
-
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        return false;
     }
 
     /**

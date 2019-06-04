@@ -61,12 +61,12 @@ public class PasswordDialog extends Dialog {
             @Override
             public void onClick(View v) {
                 if (yesOnclickListener != null) {
-                    if (!SharedPreferencesUtil.sharedPreferences.contains("password")) {
+                    if (!SharedPreferencesUtil.sharedPreferences.contains("userpassword")) {
                         if (password_et.getText().toString().equals("123456"))
                             yesOnclickListener.onYesClick(true);
                         else yesOnclickListener.onYesClick(false);
                     }else {
-                        if (password_et.getText().toString().equals(SharedPreferencesUtil.sharedPreferences.getString("password","error")))
+                        if (password_et.getText().toString().equals(SharedPreferencesUtil.sharedPreferences.getString("userpassword","error")))
                             yesOnclickListener.onYesClick(true);
                         else yesOnclickListener.onYesClick(false);
                     }

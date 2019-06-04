@@ -75,25 +75,44 @@ public class ConnectedThread2 extends Thread {
                 final String order = Transform.byteArrayToStr(buffer, bytes);
                 // Send the obtained bytes to the UI activity
                 Log.e("test", "run: " + order);
-                if (order.equals("1")) {
-                    Log.e(TAG, "run: 管理员同意您的申请:");
-                    MainActivity.isRegistered = true;
-                    SharedPreferences.Editor editor = SharedPreferencesUtil.sharedPreferences.edit();
-                    editor.putBoolean("isRegistered", true);
-                    editor.commit();
-                    EventBus.getDefault().post(new EventMessage("agress", null));
-                } else {
-                    Log.e(TAG, "run: 管理员不同意您的申请:");
-                    EventBus.getDefault().post(new EventMessage("unagress", null));
-                }
-                if (order.charAt(0)=='M'){
-                    SharedPreferencesUtil.editor.putString("password",order);
-                    EventBus.getDefault().postSticky(new EventMessage("updataQRcode",null));
-                }
+                forwardOrder(order);
+
             } catch (IOException e) {
                 break;
             }
         }
+    }
+
+    /**
+     * 转发命令
+     * @param order
+     */
+    private void forwardOrder(String order) {
+        if (order.equals("1")) {
+            Log.e(TAG, "run: 管理员同意您的申请:");
+            MainActivity.isRegistered = true;
+            SharedPreferences.Editor editor = SharedPreferencesUtil.sharedPreferences.edit();
+            editor.putBoolean("isRegistered", true);
+            editor.commit();
+            EventBus.getDefault().post(new EventMessage("agress", null));
+        } else if (order.equals("0")){
+            Log.e(TAG, "run: 管理员不同意您的申请:");
+            EventBus.getDefault().post(new EventMessage("unagress", null));
+        }
+        if (order.charAt(0)=='M'){
+            Log.e(TAG, "forwardOrder: M" );
+            SharedPreferences.Editor editor = SharedPreferencesUtil.sharedPreferences.edit();
+            editor.putString("password", order);
+            editor.commit();
+            EventBus.getDefault().postSticky(new EventMessage("updataQRcode",null));
+        }
+        if (order.charAt(0)=='F'){
+            EventBus.getDefault().post(new EventMessage("fire",null));
+        }
+        if (order.charAt(0)=='A'){
+            EventBus.getDefault().post(new EventMessage("air",null));
+        }
+        EventBus.getDefault().post(new EventMessage("test", order));
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -111,11 +130,25 @@ public class ConnectedThread2 extends Thread {
             case "closeDoor":
                 write(Transform.strToByteArray(Protocols.getCloseDoor(Protocols.userAndroidId)));
                 break;
+            case "openLight":
+                Log.e(TAG, "openLight: " + Protocols.getLight(Protocols.userAndroidId,1));
+                write(Transform.strToByteArray(Protocols.getLight(Protocols.userAndroidId,1)));
+                break;
+            case "closeLight":
+                write(Transform.strToByteArray(Protocols.getLight(Protocols.userAndroidId,0)));
+                break;
             case "record":
                 write(Transform.strToByteArray(Protocols.getRecord(Protocols.userAndroidId)));
                 break;
             case "request":
                 write(Transform.strToByteArray(Protocols.getPassword()));
+                break;
+            case "change":
+                write(Transform.strToByteArray(Protocols.changeRoot()));
+                break;
+            case "closesocket":
+                cancel();
+                break;
             default:
                 break;
         }
@@ -131,12 +164,15 @@ public class ConnectedThread2 extends Thread {
 
     /* Call this from the main activity to shutdown the connection */
     public void cancel() {
-        try {
-            mmSocket.close();
-            Log.e(TAG, "cancel: ");
-            EventBus.getDefault().unregister(this);
-        } catch (IOException e) {
+        if (mmSocket.isConnected()){
+            try {
+                mmSocket.close();
+                Log.e(TAG, "cancel: ");
+                EventBus.getDefault().unregister(this);
+            } catch (IOException e) {
+            }
         }
+
     }
 
 

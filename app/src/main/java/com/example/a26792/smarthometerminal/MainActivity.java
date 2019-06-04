@@ -69,9 +69,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static boolean isRegistered = false;
     private static final int REQUEST_ENABLE_BT = 10;
     private boolean isEnable = false;
-    static BroadcastReceiver mReceiver;
-    private ConnectedThread2 connectedThread2;
-    private ConnectedThread connectedThread;
+    static BroadcastReceiver mReceiver = null;
     ConnectThread connectThread;
     private List<String> mAlreadyArrayList = new ArrayList<>();
     private List<String> mArrayList = new ArrayList<>();
@@ -134,8 +132,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             default:
         }
-                return true;
-        }
+        return true;
+    }
 //        return super.onOptionsItemSelected(item);
 
 
@@ -269,36 +267,53 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (view.getId()) {
             case R.id.button_connect:
                 Log.e(TAG, "onClick: button_connect");
-                if (!mBluetoothAdapter.isEnabled()) {
-                    //确保已启用蓝牙,否则在这里请求蓝牙权限
-                    Log.d(TAG, "onClick() returned: mBluetoothAdapter is Enabled");
-                    //蓝牙开启请求
-                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-                    //蓝牙可检测请求
-                    Intent discoverableIntent = new
-                            Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-                    discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-                    startActivity(discoverableIntent);
+                if (btn_connect.getText().equals("搜索")) {
+                    if (!mBluetoothAdapter.isEnabled()) {
+                        //确保已启用蓝牙,否则在这里请求蓝牙权限
+                        Log.d(TAG, "onClick() returned: mBluetoothAdapter is Enabled");
+                        //蓝牙开启请求
+                        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                        //蓝牙可检测请求
+                        Intent discoverableIntent = new
+                                Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+                        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+                        startActivity(discoverableIntent);
 
+                    }
+                    btn_connect.setText("断开");
+                    searchBluetoolDevices();
+                } else {
+                    //关闭蓝牙
+                    mBluetoothAdapter.disable();
+                    LogUtil.loge(TAG, "discoonect");
+                    EventBus.getDefault().post(new EventMessage("closesocket", null));
+                    service_cb.setChecked(false);
+                    client_cb.setChecked(false);
+                    connect_cb.setChecked(false);
+                    disconnect_cb.setChecked(true);
+                    if (jianting_btn != null) {
+                        jianting_btn.setText("打开监听");
+                    }
+                    btn_connect.setText("搜索");
                 }
-                searchBluetoolDevices();
 
                 break;
             case R.id.button_disconnect:
-                //TO-DO:关闭蓝牙
-                mBluetoothAdapter.disable();
-                LogUtil.loge(TAG, "discoonect");
-                if (connectedThread != null && connectedThread != null) {
-                    connectThread.cancel();
-                    connectedThread.cancel();//断开普通用户socket连接
-                    disconnect_cb.setChecked(false);
+                //TO-DO:开关灯
+                if (connect_cb.isChecked()) {
+                    if (btn_disconnect.getText().equals("开灯")) {
+                        EventBus.getDefault().post(new EventMessage("openLight", null));
+
+                        btn_disconnect.setText("关灯");
+                    } else if (btn_disconnect.getText().equals("关灯")) {
+                        EventBus.getDefault().post(new EventMessage("closeLight", null));
+                        btn_disconnect.setText("开灯");
+                    }
+                } else {
+                    Toast.makeText(this, "请先连接蓝牙", Toast.LENGTH_SHORT).show();
                 }
-                if (connectedThread2 != null && acceptThread != null) {
-                    acceptThread.cancel();
-                    connectedThread2.cancel();//断开管理者用户socket连接
-                    disconnect_cb.setChecked(false);
-                }
+
                 break;
             case R.id.button_search:
                 //开关门
@@ -335,11 +350,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 EventBus.getDefault().post(new EventMessage("register", null));
                 break;
             case R.id.jianting:
-                acceptThread = new AcceptThread(mBluetoothAdapter);
-                acceptThread.start();
-                service_cb.setChecked(true);
-                client_cb.setChecked(false);
-                Log.e(TAG, "openService: ");
+                if (jianting_btn.getText().equals("打开监听")) {
+                    acceptThread = new AcceptThread(mBluetoothAdapter);
+                    acceptThread.start();
+                    service_cb.setChecked(true);
+                    client_cb.setChecked(false);
+                    jianting_btn.setText("关闭监听");
+                    Log.e(TAG, "openService: ");
+                } else {
+                    EventBus.getDefault().post(new EventMessage("closesocket", null));
+                    jianting_btn.setText("打开监听");
+                    service_cb.setChecked(false);
+                    client_cb.setChecked(false);
+                    if (acceptThread != null) {
+                        acceptThread.cancel();
+                    }
+                }
+
                 break;
             case R.id.tianjia:
                 showSingleAlertDialog("add");
@@ -350,8 +377,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Log.e(TAG, "onClick:shanchu ");
                 break;
             case R.id.others:
-                showSingleAlertDialog("show");
-                Log.e(TAG, "onClick:others ");
+                //改管理员
+//                showSingleAlertDialog("show");
+                EventBus.getDefault().post(new EventMessage("change", null));
+                Log.e(TAG, "onClick:change ");
                 break;
             case R.id.record:
                 EventBus.getDefault().post(new EventMessage("record", null));
@@ -416,12 +445,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    /**
-     * 在此函数展示所有用户
-     */
-    private void showOthersUsers() {
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
@@ -445,8 +468,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 LogUtil.loge(TAG, "获取已匹配设备信息");
 
             }
+            Log.e(TAG, "searchBluetoolDevices:获取已匹配设备信息完成！ ");
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             if (!mAlreadyArrayList.isEmpty()) {
                 mAlreadyBluetoothDevicesList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, mAlreadyArrayList));
+
 
             }
         }
@@ -462,6 +492,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (requestCode == 10) {
             if (resultCode == RESULT_OK) {
                 Toast.makeText(this, "蓝牙权限请求成功", Toast.LENGTH_SHORT).show();
+                searchBluetoolDevices();
             } else {
                 Toast.makeText(this, "蓝牙权限请求失败", Toast.LENGTH_SHORT).show();
             }
@@ -504,6 +535,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(this, "connect" + eventMessage.getOrder(), Toast.LENGTH_SHORT).show();
             connect_cb.setChecked(true);
             disconnect_cb.setChecked(false);
+        }
+        if (eventMessage.getMessgae().equals("fire")) {
+            Toast.makeText(this, "着火了，快跑啊！", Toast.LENGTH_LONG).show();
+        }
+        if (eventMessage.getMessgae().equals("air")) {
+            Toast.makeText(this, "CO气体浓度过高，请注意！", Toast.LENGTH_LONG).show();
         }
 
     }
@@ -558,23 +595,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     @Override
     protected void onStop() {
+        Log.e(TAG, "onStop: ");
         super.onStop();
-        unregisterReceiver(mReceiver);
+        if (mReceiver != null) {
+            unregisterReceiver(mReceiver);
+            mReceiver = null;
+        }
+
         mBluetoothAdapter = null;
         temp = null;
         temp1 = null;
-        if (connectedThread != null) {
-            connectedThread.cancel();
-        }
-        if (acceptThread != null) {
-            acceptThread.cancel();
-        }
-        if (connectedThread2 != null) {
-            connectedThread2.cancel();
-        }
-        if (connectedThread != null) {
-            connectedThread.cancel();
-        }
+        EventBus.getDefault().post(new EventMessage("closesocket", null));
         EventBus.getDefault().unregister(this);
     }
 }

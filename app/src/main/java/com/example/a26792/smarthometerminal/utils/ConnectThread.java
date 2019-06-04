@@ -98,11 +98,14 @@ public class ConnectThread extends Thread {
      * Will cancel an in-progress connection, and close the socket
      */
     public void cancel() {
-        try {
-            mmSocket.close();
-            Log.e(TAG, "cancel: " );
-        } catch (IOException e) {
+        if (mmSocket.isConnected()){
+            try {
+                mmSocket.close();
+                Log.e(TAG, "cancel: " );
+            } catch (IOException e) {
+            }
         }
+
     }
 
     /**

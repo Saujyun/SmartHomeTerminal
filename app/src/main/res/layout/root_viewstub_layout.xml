@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:onClick="showOthers"
-        android:text="其他用户" />
+        android:text="改管理员" />
 
     <Button
         android:id="@+id/record"
