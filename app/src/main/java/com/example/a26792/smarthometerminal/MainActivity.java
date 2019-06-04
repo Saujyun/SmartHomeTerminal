@@ -384,6 +384,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.record:
                 EventBus.getDefault().post(new EventMessage("record", null));
+                break;
             default:
                 break;
         }

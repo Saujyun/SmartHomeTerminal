@@ -2,6 +2,7 @@ package com.example.a26792.smarthometerminal;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.Nullable;
@@ -10,6 +11,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.a26792.smarthometerminal.Fragment.PassWordFragment;
@@ -34,8 +36,8 @@ public class LoginActivity extends AppCompatActivity {
         //先删除上一次保存的数据
         // TODO: 2019/5/21 完成之后，要删除该部分代码，同时要把data/share_pre文件删除 
         SharedPreferencesUtil lastSharedPreferencesUtil = new SharedPreferencesUtil(getApplicationContext());
-        SharedPreferencesUtil.clear();
-        SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(getApplicationContext());
+//        SharedPreferencesUtil.clear();
+//        SharedPreferencesUtil sharedPreferencesUtil = new SharedPreferencesUtil(getApplicationContext());
     }
 
     public void rootLogin(View view) {
@@ -44,13 +46,17 @@ public class LoginActivity extends AppCompatActivity {
         passwordDialog.setYesOnclickListener(new PasswordDialog.onYesOnclickListener() {
             @Override
             public void onYesClick(boolean right) {
-                check = right;
                 if (right) {
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    intent.putExtra("user", "root");
-                    startActivity(intent);
-                    Toast.makeText(LoginActivity.this, "请登录之后，马上更改门禁系统的管理员AndroidID", Toast.LENGTH_SHORT).show();
+                    if (!SharedPreferencesUtil.sharedPreferences.contains("userpassword")) {
+                        showChangePassword();
+                    } else {
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        intent.putExtra("user", "root");
+                        startActivity(intent);
+                        Toast.makeText(LoginActivity.this, "请登录之后，马上更改门禁系统的管理员AndroidID", Toast.LENGTH_SHORT).show();
 // TODO: 2019/5/21  更改门禁系统的管理员AndroidID操作
+                    }
+
                 } else {
                     Toast.makeText(LoginActivity.this, "对不起你不是管理员用户，请注册为普通用户", Toast.LENGTH_SHORT).show();
                 }
@@ -70,26 +76,29 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * 用户登录检测函数
-     *
-     * @return
-     */
-    private void checkPW() {
-
-        final PasswordDialog passwordDialog = new PasswordDialog(this);
-        passwordDialog.setYesOnclickListener(new PasswordDialog.onYesOnclickListener() {
+    private void showChangePassword() {
+        final PasswordDialog passwordDialog2 = new PasswordDialog(this);
+        passwordDialog2.setTitle("更改密码为：");
+        passwordDialog2.setYesOnclickListener(new PasswordDialog.onYesOnclickListener() {
             @Override
-            public void onYesClick(boolean rigth) {
-                check = rigth;
-                passwordDialog.dismiss();
+            public void onYesClick(boolean right) {
+                String s = (String) passwordDialog2.findViewById(R.id.password_et).getTag().toString();
+                SharedPreferences.Editor editor = SharedPreferencesUtil.sharedPreferences.edit();
+                editor.putString("userpassword", s);
+                editor.commit();
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                intent.putExtra("user", "root");
+                startActivity(intent);
+                Toast.makeText(LoginActivity.this, "请登录之后，马上更改门禁系统的管理员AndroidID", Toast.LENGTH_SHORT).show();
+// TODO: 2019/5/21  更改门禁系统的管理员AndroidID操作
+
+                passwordDialog2.dismiss();
+
             }
-
-
         });
-        passwordDialog.show();
-
+        passwordDialog2.show();
     }
+
 
     public void othersLogin(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

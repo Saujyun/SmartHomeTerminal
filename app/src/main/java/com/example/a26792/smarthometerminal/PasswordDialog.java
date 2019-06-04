@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.example.a26792.smarthometerminal.bean.Protocols;
 import com.example.a26792.smarthometerminal.utils.SharedPreferencesUtil;
@@ -20,11 +21,14 @@ import butterknife.ButterKnife;
  * Created by ${Saujyun} on 2019/5/20.
  */
 public class PasswordDialog extends Dialog {
+    @BindView(R.id.title_DL)
+    TextView textView;
     @BindView(R.id.password_et)
     EditText password_et;
     @BindView(R.id.yes)
     Button yes;
     private onYesOnclickListener yesOnclickListener;
+    private String title="请输入密码：";
 
     public PasswordDialog( Context context) {
         super(context);
@@ -47,7 +51,7 @@ public class PasswordDialog extends Dialog {
         ButterKnife.bind(this);
         //按空白处不能取消动画
         setCanceledOnTouchOutside(false);
-
+        textView.setText(title);
         //初始化界面控件的事件
         initEvent();
     }
@@ -61,6 +65,7 @@ public class PasswordDialog extends Dialog {
             @Override
             public void onClick(View v) {
                 if (yesOnclickListener != null) {
+                    password_et.setTag(password_et.getText());
                     if (!SharedPreferencesUtil.sharedPreferences.contains("userpassword")) {
                         if (password_et.getText().toString().equals("123456"))
                             yesOnclickListener.onYesClick(true);
@@ -70,12 +75,14 @@ public class PasswordDialog extends Dialog {
                             yesOnclickListener.onYesClick(true);
                         else yesOnclickListener.onYesClick(false);
                     }
-
                 }
             }
         });
     }
 
+    public void setTitle(String title) {
+        this.title=title;
+    }
 
     /**
      * 设置确定按钮和取消被点击的接口
