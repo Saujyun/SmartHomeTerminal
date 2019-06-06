@@ -94,6 +94,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ListView mBluetoothDevices_lv;
     @BindView(R.id.info_tv)
     TextView info_tv;
+    @BindView(R.id.send_message)
+    TextView sendMessage_tv;
+    @BindView(R.id.receive_message)
+    TextView receiveMessage_tv;
     private BluetoothAdapter mBluetoothAdapter;
     private Button jianting_btn;
     private Button tianjia_btn;
@@ -471,7 +475,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
             Log.e(TAG, "searchBluetoolDevices:获取已匹配设备信息完成！ ");
             try {
-                Thread.sleep(2000);
+                Thread.sleep(1500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -500,7 +504,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
+// TODO: 2019/6/6 :可以尝试把这块代码抽离，放到透明的fragment中去
     /**
      * 该函数辅助Thread执行UI交互操作
      *
@@ -530,7 +534,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             noregister_cb.setChecked(false);
         }
         if (eventMessage.getMessgae().equals("test")) {
-            Toast.makeText(this, "test" + eventMessage.getOrder(), Toast.LENGTH_SHORT).show();
+            StringBuilder builder=new StringBuilder("接收到的数据：");
+            builder.append(eventMessage.getOrder());
+            receiveMessage_tv.setText(builder.toString());
+            Toast.makeText(this, "test" + eventMessage.getOrder(), Toast.LENGTH_LONG).show();
         }
         if (eventMessage.getMessgae().equals("connect")) {
             Toast.makeText(this, "connect" + eventMessage.getOrder(), Toast.LENGTH_SHORT).show();
@@ -542,6 +549,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (eventMessage.getMessgae().equals("air")) {
             Toast.makeText(this, "CO气体浓度过高，请注意！", Toast.LENGTH_LONG).show();
+        }
+        if (eventMessage.getMessgae().equals("sendMessage")) {
+            StringBuilder builder=new StringBuilder("发送的数据：");
+            builder.append(eventMessage.getOrder());
+            sendMessage_tv.setText(builder.toString());
         }
 
     }

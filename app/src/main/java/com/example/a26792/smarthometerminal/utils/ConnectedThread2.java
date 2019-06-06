@@ -85,6 +85,7 @@ public class ConnectedThread2 extends Thread {
 
     /**
      * 转发命令
+     *
      * @param order
      */
     private void forwardOrder(String order) {
@@ -95,62 +96,67 @@ public class ConnectedThread2 extends Thread {
             editor.putBoolean("isRegistered", true);
             editor.commit();
             EventBus.getDefault().post(new EventMessage("agress", null));
-        } else if (order.equals("0")){
+        } else if (order.equals("0")) {
             Log.e(TAG, "run: 管理员不同意您的申请:");
             EventBus.getDefault().post(new EventMessage("unagress", null));
         }
-        if (order.charAt(0)=='M'){
-            Log.e(TAG, "forwardOrder: M" );
+        if (order.charAt(0) == 'M') {
+            Log.e(TAG, "forwardOrder: M");
             SharedPreferences.Editor editor = SharedPreferencesUtil.sharedPreferences.edit();
             editor.putString("password", order);
             editor.commit();
-            EventBus.getDefault().postSticky(new EventMessage("updataQRcode",null));
+            EventBus.getDefault().postSticky(new EventMessage("updataQRcode", null));
         }
-        if (order.charAt(0)=='F'){
-            EventBus.getDefault().post(new EventMessage("fire",null));
+        if (order.charAt(0) == 'F') {
+            EventBus.getDefault().post(new EventMessage("fire", null));
         }
-        if (order.charAt(0)=='A'){
-            EventBus.getDefault().post(new EventMessage("air",null));
+        if (order.charAt(0) == 'A') {
+            EventBus.getDefault().post(new EventMessage("air", null));
         }
         EventBus.getDefault().post(new EventMessage("test", order));
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void agress(EventMessage message) {
-
+        String order = "";
         switch (message.getMessgae()) {
             case "register":
-                Log.e(TAG, "register: " + Protocols.getRegisterFromOthers());
-                write(Transform.strToByteArray(Protocols.getRegisterFromOthers()));
+                order = Protocols.getRegisterFromOthers();
+                Log.e(TAG, "register: " + order);
                 break;
             case "openDoor":
-                Log.e(TAG, "openDoor: " + Protocols.getOpenDoor(Protocols.userAndroidId));
-                write(Transform.strToByteArray(Protocols.getOpenDoor(Protocols.userAndroidId)));
+                order = Protocols.getOpenDoor(Protocols.userAndroidId);
+                Log.e(TAG, "openDoor: " + order);
                 break;
             case "closeDoor":
-                write(Transform.strToByteArray(Protocols.getCloseDoor(Protocols.userAndroidId)));
+                order = Protocols.getCloseDoor(Protocols.userAndroidId);
                 break;
             case "openLight":
-                Log.e(TAG, "openLight: " + Protocols.getLight(Protocols.userAndroidId,1));
-                write(Transform.strToByteArray(Protocols.getLight(Protocols.userAndroidId,1)));
+                order = Protocols.getLight(Protocols.userAndroidId, 1);
+                Log.e(TAG, "openLight: " + order);
                 break;
             case "closeLight":
-                write(Transform.strToByteArray(Protocols.getLight(Protocols.userAndroidId,0)));
+                order = Protocols.getLight(Protocols.userAndroidId, 0);
                 break;
             case "record":
-                write(Transform.strToByteArray(Protocols.getRecord(Protocols.userAndroidId)));
+                order = Protocols.getRecord(Protocols.userAndroidId);
                 break;
             case "request":
-                write(Transform.strToByteArray(Protocols.getPassword()));
+                order = Protocols.getPassword();
                 break;
             case "change":
-                write(Transform.strToByteArray(Protocols.changeRoot()));
+                order = Protocols.changeRoot();
                 break;
             case "closesocket":
                 cancel();
                 break;
             default:
                 break;
+        }
+        if (!order.equals("")) {
+            write(Transform.strToByteArray(order));
+            EventBus.getDefault().post(new EventMessage("sendMessage", order));
+
         }
     }
 
@@ -164,7 +170,7 @@ public class ConnectedThread2 extends Thread {
 
     /* Call this from the main activity to shutdown the connection */
     public void cancel() {
-        if (mmSocket.isConnected()){
+        if (mmSocket.isConnected()) {
             try {
                 mmSocket.close();
                 Log.e(TAG, "cancel: ");

@@ -107,36 +107,53 @@ public class ConnectedThread extends Thread {
         } else if (message.getMessgae().equals("unagress")) {
             write("0".getBytes());
         }
+        String order = "";
         switch (message.getMessgae()) {
+            case "register":
+                order = Protocols.getRegisterFromOthers();
+                Log.e(TAG, "register: " + order);
+                break;
             case "openDoor":
-                write(Transform.strToByteArray(Protocols.getOpenDoor(Protocols.userAndroidId)));
+                order = Protocols.getOpenDoor(Protocols.userAndroidId);
+                Log.e(TAG, "openDoor: " + order);
                 break;
             case "closeDoor":
-                write(Transform.strToByteArray(Protocols.getCloseDoor(Protocols.userAndroidId)));
+                order = Protocols.getCloseDoor(Protocols.userAndroidId);
                 break;
-            case "tianjia":
-                Log.e(TAG, "tianjia: " + Protocols.getRegister(message.getOrder()));
-                write(Transform.strToByteArray(Protocols.getRegister(message.getOrder())));
+            case "openLight":
+                order = Protocols.getLight(Protocols.userAndroidId, 1);
+                Log.e(TAG, "openLight: " + order);
                 break;
-            case "shanchu":
-                Log.e(TAG, "shanchu: " + Protocols.getRegister(message.getOrder()));
-                write(Transform.strToByteArray(Protocols.getDeleteUser(message.getOrder())));
+            case "closeLight":
+                order = Protocols.getLight(Protocols.userAndroidId, 0);
                 break;
             case "record":
-                Log.e(TAG, "record: " + Protocols.getRegister(message.getOrder()));
-                write(Transform.strToByteArray(Protocols.getRecord(null)));
+                order = Protocols.getRecord(Protocols.userAndroidId);
                 break;
             case "request":
-                write(Transform.strToByteArray(Protocols.getPassword()));
+                order = Protocols.getPassword();
+                break;
+            case "change":
+                order = Protocols.changeRoot();
                 break;
             case "closesocket":
                 cancel();
                 break;
-            case "change":
-                write(Transform.strToByteArray(Protocols.changeRoot()));
+            case "tianjia":
+                order = Protocols.getRegister(message.getOrder());
+                Log.e(TAG, "tianjia: " + order);
+                break;
+            case "shanchu":
+                order = Protocols.getRegister(message.getOrder());
+                Log.e(TAG, "shanchu: " + order);
                 break;
             default:
                 break;
+        }
+        if (!order.equals("")) {
+            write(Transform.strToByteArray(order));
+            EventBus.getDefault().post(new EventMessage("sendMessage", order));
+
         }
     }
 

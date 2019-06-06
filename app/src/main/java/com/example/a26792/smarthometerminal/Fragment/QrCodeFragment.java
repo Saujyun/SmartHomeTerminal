@@ -16,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -51,6 +52,8 @@ public class QrCodeFragment extends Fragment {
         View view = inflater.inflate(R.layout.qrcode_layout, container, false);
         qrcode_iv = view.findViewById(R.id.qrcode_iv);
         EventBus.getDefault().register(this);
+        //禁止截图
+        getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
         return view;
     }
 
