@@ -57,6 +57,12 @@ public class QrCodeFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        generateQRCode();
+    }
+
     private void generateQRCode() {
         Log.e(TAG, "generateQRCode: ");
         String textContent = "test for QRCode";
@@ -86,28 +92,28 @@ public class QrCodeFragment extends Fragment {
 
     }
 
-    /**
-     * 保存位图到本地
-     *
-     * @param bitmap
-     * @param path   本地路径
-     * @return void
-     */
-    public void savaImage(Bitmap bitmap, String path) {
-        File file = new File(path);
-        FileOutputStream fileOutputStream = null;
-        //文件夹不存在，则创建它
-        if (!file.exists()) {
-            file.mkdir();
-        }
-        try {
-            fileOutputStream = new FileOutputStream(path + ".png");
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
-            fileOutputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    /**
+//     * 保存位图到本地
+//     *
+//     * @param bitmap
+//     * @param path   本地路径
+//     * @return void
+//     */
+//    public void savaImage(Bitmap bitmap, String path) {
+//        File file = new File(path);
+//        FileOutputStream fileOutputStream = null;
+//        //文件夹不存在，则创建它
+//        if (!file.exists()) {
+//            file.mkdir();
+//        }
+//        try {
+//            fileOutputStream = new FileOutputStream(path + ".png");
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fileOutputStream);
+//            fileOutputStream.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     public void onDestroy() {

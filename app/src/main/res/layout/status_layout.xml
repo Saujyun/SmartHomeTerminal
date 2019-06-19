@@ -153,5 +153,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="发送的数据：" />
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="收到的所有数据：" />
+        <TextView
+            android:id="@+id/receive_allmessage"
+            android:text="null"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content" />
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

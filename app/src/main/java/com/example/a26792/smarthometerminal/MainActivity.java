@@ -98,6 +98,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView sendMessage_tv;
     @BindView(R.id.receive_message)
     TextView receiveMessage_tv;
+    @BindView(R.id.receive_allmessage)
+    TextView receiveAllmessage;
     private BluetoothAdapter mBluetoothAdapter;
     private Button jianting_btn;
     private Button tianjia_btn;
@@ -337,7 +339,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.button_generate_QR:
                 //TO-DO：生成二维码
-                if (connect_cb.isChecked()) {
+//                if (connect_cb.isChecked()) {
                     FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
                     QrCodeFragment fragment = new QrCodeFragment();
                     fragmentTransaction.replace(R.id.qrcode_fragment, fragment);
@@ -345,9 +347,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     fragmentTransaction.commit();
                     EventBus.getDefault().post(new EventMessage("request", null));
                     LogUtil.loge(TAG, "QR");
-                } else {
-                    Toast.makeText(this, "请先连接蓝牙", Toast.LENGTH_SHORT).show();
-                }
+                    EventBus.getDefault().postSticky(new EventMessage("updataQRcode", null));
+//                } else {
+//                    Toast.makeText(this, "请先连接蓝牙", Toast.LENGTH_SHORT).show();
+//                }
 
                 break;
             case R.id.requestagain_btn:
@@ -505,6 +508,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 // TODO: 2019/6/6 :可以尝试把这块代码抽离，放到透明的fragment中去
+
     /**
      * 该函数辅助Thread执行UI交互操作
      *
@@ -534,10 +538,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             noregister_cb.setChecked(false);
         }
         if (eventMessage.getMessgae().equals("test")) {
-            StringBuilder builder=new StringBuilder("接收到的数据：");
+            StringBuilder builder = new StringBuilder("接收到的数据：");
+            StringBuilder builder2 = new StringBuilder(receiveAllmessage.getText().toString());
             builder.append(eventMessage.getOrder());
+            builder2.append(eventMessage.getOrder()+"/n");
             receiveMessage_tv.setText(builder.toString());
-            Toast.makeText(this, "test" + eventMessage.getOrder(), Toast.LENGTH_LONG).show();
+            receiveAllmessage.setText(builder2);
+            Toast.makeText(this, "test" + eventMessage.getOrder(), Toast.LENGTH_SHORT).show();
         }
         if (eventMessage.getMessgae().equals("connect")) {
             Toast.makeText(this, "connect" + eventMessage.getOrder(), Toast.LENGTH_SHORT).show();
@@ -551,7 +558,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(this, "CO气体浓度过高，请注意！", Toast.LENGTH_LONG).show();
         }
         if (eventMessage.getMessgae().equals("sendMessage")) {
-            StringBuilder builder=new StringBuilder("发送的数据：");
+            StringBuilder builder = new StringBuilder("发送的数据：");
             builder.append(eventMessage.getOrder());
             sendMessage_tv.setText(builder.toString());
         }

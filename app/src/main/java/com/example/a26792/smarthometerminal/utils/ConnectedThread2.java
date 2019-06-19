@@ -23,6 +23,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -38,6 +40,7 @@ public class ConnectedThread2 extends Thread {
     private final InputStream mmInStream;
     private final OutputStream mmOutStream;
     private Handler mHandler;
+    private boolean falg = false;
 
     public ConnectedThread2(BluetoothSocket socket) {
         mmSocket = socket;
@@ -58,7 +61,7 @@ public class ConnectedThread2 extends Thread {
     }
 
     public void run() {
-        byte[] buffer = new byte[1024];  // buffer store for the stream
+        byte[] buffer = new byte[2048];  // buffer store for the stream
         int bytes; // bytes returned from read()
         // Keep listening to the InputStream until an exception occurs
         int status = 1;
@@ -75,8 +78,14 @@ public class ConnectedThread2 extends Thread {
                 final String order = Transform.byteArrayToStr(buffer, bytes);
                 // Send the obtained bytes to the UI activity
                 Log.e("test", "run: " + order);
-                forwardOrder(order);
-
+                Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        System.out.println("IMP 当前时间" + this.scheduledExecutionTime());
+                        forwardOrder(order);
+                    }
+                }, 1000);
             } catch (IOException e) {
                 break;
             }
@@ -89,29 +98,35 @@ public class ConnectedThread2 extends Thread {
      * @param order
      */
     private void forwardOrder(String order) {
-        if (order.equals("1")) {
-            Log.e(TAG, "run: 管理员同意您的申请:");
-            MainActivity.isRegistered = true;
-            SharedPreferences.Editor editor = SharedPreferencesUtil.sharedPreferences.edit();
-            editor.putBoolean("isRegistered", true);
-            editor.commit();
-            EventBus.getDefault().post(new EventMessage("agress", null));
-        } else if (order.equals("0")) {
-            Log.e(TAG, "run: 管理员不同意您的申请:");
-            EventBus.getDefault().post(new EventMessage("unagress", null));
-        }
-        if (order.charAt(0) == 'M') {
-            Log.e(TAG, "forwardOrder: M");
+        if (falg) {
             SharedPreferences.Editor editor = SharedPreferencesUtil.sharedPreferences.edit();
             editor.putString("password", order);
             editor.commit();
             EventBus.getDefault().postSticky(new EventMessage("updataQRcode", null));
-        }
-        if (order.charAt(0) == 'F') {
-            EventBus.getDefault().post(new EventMessage("fire", null));
-        }
-        if (order.charAt(0) == 'A') {
-            EventBus.getDefault().post(new EventMessage("air", null));
+            falg=false;
+        } else {
+            if (order.equals("1")) {
+                Log.e(TAG, "run: 管理员同意您的申请:");
+                MainActivity.isRegistered = true;
+                SharedPreferences.Editor editor = SharedPreferencesUtil.sharedPreferences.edit();
+                editor.putBoolean("isRegistered", true);
+                editor.commit();
+                EventBus.getDefault().post(new EventMessage("agress", null));
+            } else if (order.equals("0")) {
+                Log.e(TAG, "run: 管理员不同意您的申请:");
+                EventBus.getDefault().post(new EventMessage("unagress", null));
+            }
+            if (order.charAt(0) == 'M') {
+                Log.e(TAG, "forwardOrder: M");
+                falg = true;
+            }
+            if (order.charAt(0) == 'F') {
+                EventBus.getDefault().post(new EventMessage("fire", null));
+            }
+            if (order.charAt(0) == 'A') {
+                EventBus.getDefault().post(new EventMessage("air", null));
+            }
+
         }
         EventBus.getDefault().post(new EventMessage("test", order));
     }
