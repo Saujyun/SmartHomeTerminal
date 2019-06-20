@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:textSize="19sp"
+        android:textColor="#247ABB"
+        android:text="\n用户操作指南：\n" />
+
+    <TextView
+        android:id="@+id/text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:textSize="18sp"
+        android:text="
+1.普通用户注册：点击“普通用户”按钮进入主界面，点击“搜索”搜索周边蓝牙设备，点击蓝牙列表中管理员手机蓝牙（自动发送注册请求），之后管理员客户端会有弹窗提示。若没有弹窗/管理员拒绝注册请求，普通用户可以点击“注册”按钮再次发送注册请求。\n
+2.管理员账号默认登录密码：123456  请登录之后务必更改登录密码（已强制更改），并把门禁系统管理员的AndroidID从默认root用户AndroidID更改为本手机AndroidID，防止其他人下载该app操纵用户门禁系统。\n
+3.管理者用户请先点击“搜索”，再点击“打开监听”，才能接收来自普通用户的注册请求。\n
+4.完成注册的普通用户，可以通过连接门禁系统蓝牙，实现开/关门、开关灯等操作，并获取到开门密钥，能够在一段时间之内实现二维码开锁（时效性二维码为二期开发）。\n
+5.管理者用户首次连接门禁系统之后，能获取到密钥，密钥可用于二维码的生成。\n
+6.管理者用户除基本开门功能之外，还具备查询“开门记录”功能（二期开发）、“添加/删除”用户功能、查询所有授权用户等功能。" />
+
+
+</LinearLayout>

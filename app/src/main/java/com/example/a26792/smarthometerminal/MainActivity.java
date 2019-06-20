@@ -136,6 +136,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intent2 = new Intent(MainActivity.this, AboutActivity.class);
                 startActivity(intent2);
                 break;
+            case R.id.Help:
+                Intent intent3 = new Intent(MainActivity.this, HelpActivity.class);
+                startActivity(intent3);
+                break;
             default:
         }
         return true;

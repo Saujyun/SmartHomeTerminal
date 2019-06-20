@@ -3,13 +3,24 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:textSize="19sp"
+        android:textColor="#247ABB"
+        android:text="\n关于\n" />
 
     <TextView
         android:id="@+id/text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="About" />
+        android:gravity="left"
+        android:textSize="18sp"
+        android:autoLink="all"
+        android:text="基于蓝牙通信和二维码的智能家居系统URL：https://github.com/Saujyun/SmartHomeTerminal
+" />
 
 
 </LinearLayout>
